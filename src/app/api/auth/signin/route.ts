@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server';
 import { decodeJwt, JwtPayload } from '@/lib/auth/jwt';
 import { upstream, HttpError, jsonError, jsonOk, setAuthCookies } from '@/lib/http';
 
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
