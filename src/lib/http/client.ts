@@ -1,16 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import api from '@/lib/api/client';
-
-export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
-export type ApiErrorBody = {
-  error?: {
-    message?: string;
-    code?: string;
-    details?: unknown;
-  };
-  [k: string]: unknown;
-};
+import type { Method, ApiErrorBody } from '@/lib/http/types';
 
 export class ClientError<T = unknown> extends Error {
   status: number;
