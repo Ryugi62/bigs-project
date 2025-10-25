@@ -1,5 +1,13 @@
 import { NextRequest } from 'next/server';
-import { getAccessToken, upstream, HttpError, jsonError, jsonOk } from '@/lib/http';
+import {
+  getAccessToken,
+  upstream,
+  HttpError,
+  jsonError,
+  jsonOk,
+  ensureCsrfCookie,
+  getCsrfCookie,
+} from '@/lib/http';
 
 /** Build upstream path including query string */
 function buildBoardsPath(req: NextRequest, segments: string[] = []) {
@@ -15,6 +23,15 @@ export async function handleBoardsNoBody(
   segments?: string[],
 ) {
   try {
+    if (method === 'GET') {
+      await ensureCsrfCookie();
+    } else if (method === 'DELETE') {
+      const header = req.headers.get('x-csrf-token');
+      const token = await getCsrfCookie();
+      if (!header || !token || header !== token) {
+        return jsonError(403, 'Invalid CSRF token', undefined, 'CSRF_INVALID');
+      }
+    }
     const token = await getAccessToken();
     const url = buildBoardsPath(req, segments || []);
     const { data, status } = await upstream(method, url, { token });
@@ -33,6 +50,11 @@ export async function handleBoardsWithBody(
   segments?: string[],
 ) {
   try {
+    const header = req.headers.get('x-csrf-token');
+    const tokenCookie = await getCsrfCookie();
+    if (!header || !tokenCookie || header !== tokenCookie) {
+      return jsonError(403, 'Invalid CSRF token', undefined, 'CSRF_INVALID');
+    }
     const token = await getAccessToken();
     const body = await req.json();
     const url = buildBoardsPath(req, segments || []);
