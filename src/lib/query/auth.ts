@@ -25,7 +25,7 @@ export function useSignInMutation() {
     mutationFn: (body: SignInBody) => signIn(body),
     onSuccess: (data: SignInResponse) => {
       setUser(data.user ?? null);
-      qc.invalidateQueries();
+      qc.invalidateQueries({ queryKey: ['boards'] });
     },
   });
 }

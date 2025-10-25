@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LogoImage from '@/app/assets/logo.png';
+import { cx } from '@/lib/cx';
 
 type NavItem = { label: string; href: string };
 
@@ -14,11 +15,14 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Menu3', href: '/menu3' },
 ];
 
+const navItemBase =
+  "group relative inline-grid items-baseline justify-items-start pr-6 py-2 transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full";
+
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
       href={item.href}
-      className={`group relative inline-grid items-baseline justify-items-start pr-6 py-2 transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full ${isActive ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900'}`}
+      className={cx(navItemBase, isActive ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900')}
       aria-current={isActive ? 'page' : undefined}
     >
       <span
@@ -83,14 +87,14 @@ export default function HeaderComponent() {
           >
             <span
               aria-hidden="true"
-              className={
-                `relative block w-6 h-px transition-all duration-[0.5s] ` +
-                `${open ? 'bg-transparent' : 'bg-current'} ` +
-                `before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s] ` +
-                `${open ? 'before:-translate-y-1/2 before:rotate-45' : 'before:-translate-y-[7px]'} ` +
-                `after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s] ` +
-                `${open ? 'after:-translate-y-1/2 after:-rotate-45' : 'after:translate-y-[7px]'} `
-              }
+              className={cx(
+                'relative block w-6 h-px transition-all duration-[0.5s]',
+                open ? 'bg-transparent' : 'bg-current',
+                "before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s]",
+                open ? 'before:-translate-y-1/2 before:rotate-45' : 'before:-translate-y-[7px]',
+                "after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s]",
+                open ? 'after:-translate-y-1/2 after:-rotate-45' : 'after:translate-y-[7px]',
+              )}
             />
           </span>
         </div>
@@ -99,11 +103,17 @@ export default function HeaderComponent() {
       {/* Mobile menu */}
       <div
         id="mobile-menu"
-        className={`md:hidden fixed inset-0 z-50 overflow-hidden transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={cx(
+          'md:hidden fixed inset-0 z-50 overflow-hidden transition-opacity duration-300',
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+        )}
         aria-hidden={!open}
       >
         <div
-          className={`absolute right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
+          className={cx(
+            'absolute right-0 top-0 h-full w-full bg-white shadow-xl transition-transform duration-300',
+            open ? 'translate-x-0' : 'translate-x-full',
+          )}
           role="dialog"
           aria-modal="true"
         >
@@ -113,7 +123,10 @@ export default function HeaderComponent() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`text-lg px-3 py-3 rounded-md ${isActive(item.href) ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900'}`}
+                className={cx(
+                  'text-lg px-3 py-3 rounded-md',
+                  isActive(item.href) ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900',
+                )}
                 aria-current={isActive(item.href) ? 'page' : undefined}
               >
                 {item.label}

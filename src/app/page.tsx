@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import type { Board } from '@/lib/query/boards';
+import type { Board } from '@/types/boards';
 import { upstream } from '@/lib/http/upstream';
 import { getAccessToken } from '@/lib/http/cookies';
 
