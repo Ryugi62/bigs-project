@@ -1,4 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosHeaders,
+  RawAxiosRequestHeaders,
+} from 'axios';
 
 // Base API client for server communication
 // - Uses NEXT_PUBLIC_API_BASE_URL from environment
@@ -20,10 +25,18 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (token) {
-        config.headers = {
-          ...config.headers,
-          Authorization: `Bearer ${token}`,
-        } as any;
+        // Axios v1 headers can be AxiosHeaders (class) or a plain object
+        if (config.headers && 'set' in (config.headers as AxiosHeaders)) {
+          (config.headers as AxiosHeaders).set(
+            'Authorization',
+            `Bearer ${token}`,
+          );
+        } else {
+          config.headers = {
+            ...(config.headers as RawAxiosRequestHeaders),
+            Authorization: `Bearer ${token}`,
+          };
+        }
       }
     } catch {
       // no-op: accessing localStorage may fail in some environments
@@ -41,4 +54,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
