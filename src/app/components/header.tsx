@@ -18,7 +18,7 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
       href={item.href}
-      className={`px-3 py-2 text-sm transition-colors ${isActive ? "text-blue-600" : "text-gray-700 hover:text-gray-900"}`}
+      className={`h-full relative inline-flex items-center px-3 py-2 text-sm transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full ${isActive ? "text-blue-600" : "text-gray-700 hover:text-gray-900"}`}
       aria-current={isActive ? "page" : undefined}
     >
       {item.label}
@@ -64,7 +64,7 @@ export default function HeaderComponent() {
           </Link>
 
           <nav
-            className="hidden md:flex items-center gap-1 ml-auto"
+            className="hidden gap-20 h-full md:flex items-center gap-1 ml-auto"
             aria-label="주요 메뉴"
           >
             {NAV_ITEMS.map((item) => (
