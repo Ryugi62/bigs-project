@@ -10,7 +10,7 @@ export default function HeaderComponent() {
 
     return (
         <div className="max-h-[77px] h-full border-b border-[#ddd]">
-            <div className="max-w-[1280px] h-full flex items-center m-auto">
+            <div className="max-w-[1400px] h-full flex items-center m-auto">
                 <Image
                     src={LogoImage}
                     alt="Logo"
