@@ -18,10 +18,18 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
       href={item.href}
-      className={`h-full relative inline-flex items-center px-3 py-2 text-sm transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full ${isActive ? "text-blue-600" : "text-gray-700 hover:text-gray-900"}`}
+      className={`group relative inline-grid items-baseline justify-items-start pr-6 py-2 transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full ${isActive ? "text-blue-600" : "text-gray-700 hover:text-gray-900"}`}
       aria-current={isActive ? "page" : undefined}
     >
-      {item.label}
+      <span
+        aria-hidden="true"
+        className="font-bold col-start-1 row-start-1 opacity-0 select-none transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+      >
+        {item.label}
+      </span>
+      <span className="col-start-1 row-start-1 transition-opacity duration-150 group-hover:opacity-0 group-focus-visible:opacity-0">
+        {item.label}
+      </span>
     </Link>
   );
 }
@@ -64,7 +72,7 @@ export default function HeaderComponent() {
           </Link>
 
           <nav
-            className="hidden md:flex items-center justify-center col-start-2 gap-6 h-full"
+            className="hidden md:flex items-center justify-center col-start-2 gap-20 h-full"
             aria-label="주요 메뉴"
           >
             {NAV_ITEMS.map((item) => (
