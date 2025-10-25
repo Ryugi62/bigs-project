@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api/client';
+import { get } from '@/lib/http/client';
 
 // 타입은 서버 응답에 맞춰 추후 보강
 export type Board = {
@@ -9,8 +9,7 @@ export type Board = {
 };
 
 async function getBoards() {
-  const { data } = await api.get('/boards');
-  return data as Board[];
+  return await get<Board[]>('/boards');
 }
 
 export function useBoardsQuery() {

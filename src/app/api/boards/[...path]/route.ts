@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import { NextRequest } from 'next/server';
 import { handleBoardsNoBody, handleBoardsWithBody } from '../_proxy';
 
 export async function GET(req: NextRequest, ctx: { params: { path: string[] } }) {

@@ -3,6 +3,7 @@ import { isProd } from '@/config/env';
 
 export const ACCESS_TOKEN_COOKIE = 'accessToken';
 export const REFRESH_TOKEN_COOKIE = 'refreshToken';
+export const CSRF_TOKEN_COOKIE = 'csrfToken';
 
 export async function setAuthCookies(
   tokens: { accessToken: string; refreshToken?: string },
@@ -47,4 +48,33 @@ export async function clearAuthCookies() {
 export async function getAccessToken() {
   const cookieStore = await cookies();
   return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value ?? null;
+}
+
+export async function getRefreshToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get(REFRESH_TOKEN_COOKIE)?.value ?? null;
+}
+
+export async function ensureCsrfCookie() {
+  const cookieStore = await cookies();
+  const exists = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
+  if (!exists) {
+    const token =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2);
+    cookieStore.set(CSRF_TOKEN_COOKIE, token, {
+      httpOnly: false,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+    });
+    return token;
+  }
+  return exists;
+}
+
+export async function getCsrfCookie() {
+  const cookieStore = await cookies();
+  return cookieStore.get(CSRF_TOKEN_COOKIE)?.value ?? null;
 }

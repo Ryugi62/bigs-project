@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 export type JwtPayload = {
   // Server appears to include at least these two fields in payload
   name?: string;
@@ -43,4 +44,3 @@ export function isJwtExpired(token: string): boolean {
   const nowSec = Math.floor(Date.now() / 1000);
   return payload.exp <= nowSec;
 }
-import { Buffer } from 'buffer';
