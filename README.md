@@ -90,6 +90,45 @@ npm run lint
   - 환경 변수 필요 시 Vercel Project Settings → Environment Variables에서 관리
   - `npm run build`가 성공하는지 로컬에서 먼저 확인
 
+## 서버/클라이언트 상태 관리 가이드
+
+- 서버 상태: @tanstack/react-query로 페칭/캐싱/리페치/리트라이 관리
+- 클라이언트 상태: Zustand로 UI/세션 등의 로컬 상태 관리
+
+### React Query 사용법
+- Provider: 앱은 이미 `QueryClientProvider`로 래핑되어 있습니다.
+  - 파일: `src/app/providers.tsx`, `src/lib/query/client.ts`
+- 예시 쿼리 훅: `useBoardsQuery`
+  - 파일: `src/lib/query/boards.ts`
+```
+import { useBoardsQuery } from '@/lib/query/boards'
+
+export default function Boards() {
+  const { data, isLoading, error } = useBoardsQuery()
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>에러가 발생했어요.</div>
+  return <pre>{JSON.stringify(data, null, 2)}</pre>
+}
+```
+
+### Zustand 사용법
+- UI 스토어 예시: 사이드바 열림/닫힘 상태
+  - 파일: `src/store/ui.ts`
+```
+import { useUiStore } from '@/store/ui'
+
+function ToggleSidebar() {
+  const open = useUiStore(s => s.isSidebarOpen)
+  const toggle = useUiStore(s => s.toggleSidebar)
+  return <button onClick={toggle}>{open ? '닫기' : '열기'}</button>
+}
+```
+
+### 환경 변수
+- Axios 베이스 URL: `NEXT_PUBLIC_API_BASE_URL`
+  - 예시: `.env.local` → `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
+  - 공통 클라이언트 파일: `src/lib/api/client.ts`
+
 ---
 
 문의/피드백은 이슈로 남겨 주세요. 문서나 내용 보강이 필요하면 알려주시면 바로 반영하겠습니다.

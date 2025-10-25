@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+# Run lint-staged without auto-install; assumes deps are installed
+npx --no-install lint-staged
+
