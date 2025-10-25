@@ -1,14 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-
 * {
   border: 1px solid red;
-  
+
   box-sizing: border-box;
   word-break: keep-all;
   line-height: 1.5;
