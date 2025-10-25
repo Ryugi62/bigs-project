@@ -90,10 +90,6 @@ npm run lint
   - 환경 변수 필요 시 Vercel Project Settings → Environment Variables에서 관리
   - `npm run build`가 성공하는지 로컬에서 먼저 확인
 
----
-
-문의/피드백은 이슈로 남겨 주세요. 문서나 내용 보강이 필요하면 알려주시면 바로 반영하겠습니다.
-
 ## 서버/클라이언트 상태 관리 가이드
 
 - 서버 상태: @tanstack/react-query로 페칭/캐싱/리페치/리트라이 관리
@@ -132,3 +128,7 @@ function ToggleSidebar() {
 - Axios 베이스 URL: `NEXT_PUBLIC_API_BASE_URL`
   - 예시: `.env.local` → `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
   - 공통 클라이언트 파일: `src/lib/api/client.ts`
+
+---
+
+문의/피드백은 이슈로 남겨 주세요. 문서나 내용 보강이 필요하면 알려주시면 바로 반영하겠습니다.
