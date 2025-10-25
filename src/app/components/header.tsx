@@ -18,7 +18,7 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
       href={item.href}
-      className={`px-3 py-2 text-sm rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${
+      className={`px-3 py-2 text-sm transition-colors ${
         isActive ? "text-blue-600" : "text-gray-700 hover:text-gray-900"
       }`}
       aria-current={isActive ? "page" : undefined}
@@ -40,13 +40,7 @@ export default function HeaderComponent() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-blue-600 px-3 py-2 rounded shadow"
-      >
-        본문으로 건너뛰기
-      </a>
-      <div className="max-w-[1400px] h-[64px] flex items-center mx-auto px-4">
+      <div className="max-w-[1400px] h-[77px] flex items-center mx-auto px-4">
         <Link
           href="/"
           className="flex items-center gap-2"
@@ -72,28 +66,27 @@ export default function HeaderComponent() {
           ))}
         </nav>
 
-        <button
-          type="button"
-          className="md:hidden ml-auto inline-flex items-center justify-center p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        <span
+          role="button"
+          tabIndex={0}
           aria-controls="mobile-menu"
           aria-expanded={open}
+          aria-label={open ? "모바일 메뉴 닫기" : "모바일 메뉴 열기"}
           onClick={() => setOpen((v) => !v)}
+          className="md:hidden ml-auto inline-flex items-center justify-center w-11 h-11 -mr-2"
         >
-          <span className="sr-only">
-            {open ? "모바일 메뉴 닫기" : "모바일 메뉴 열기"}
-          </span>
           <span
             aria-hidden="true"
             className={
-              `relative block h-4 w-6 border-b border-current transition-all duration-200 ` +
-              `${open ? "border-transparent" : ""} ` +
-              `before:content-[''] before:absolute before:left-0 before:top-0 before:block before:w-full before:border-b before:border-current before:transition-transform before:duration-200 ` +
-              `${open ? "before:translate-y-0 before:rotate-45" : "before:-translate-y-[6px]"} ` +
-              `after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:w-full after:border-b after:border-current after:transition-transform after:duration-200 ` +
-              `${open ? "after:translate-y-0 after:-rotate-45" : "after:translate-y-[6px]"} `
+              `relative block w-6 h-px transition-all duration-[0.5s] ` +
+              `${open ? "bg-transparent" : "bg-current"} ` +
+              `before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s] ` +
+              `${open ? "before:-translate-y-1/2 before:rotate-45" : "before:-translate-y-[7px]"} ` +
+              `after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s] ` +
+              `${open ? "after:-translate-y-1/2 after:-rotate-45" : "after:translate-y-[7px]"} `
             }
           />
-        </button>
+        </span>
       </div>
 
       {/* Mobile menu */}
