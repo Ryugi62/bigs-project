@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { getApiBaseUrl } from '@/config/env';
+import type { Method } from '@/lib/http/types';
 
 export class HttpError<T = unknown> extends Error {
   status: number;
@@ -28,8 +29,6 @@ function getUpstream(): AxiosInstance {
   }
   return upstreamClient;
 }
-
-export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export async function upstream<T = unknown>(
   method: Method,

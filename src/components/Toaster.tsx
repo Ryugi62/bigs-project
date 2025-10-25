@@ -5,39 +5,26 @@ import { useToastStore } from '@/store/toast';
 export default function Toaster() {
   const toasts = useToastStore((s) => s.toasts);
   const remove = useToastStore((s) => s.remove);
+
+  const bgClass = (type?: string) =>
+    type === 'error'
+      ? 'bg-red-200'
+      : type === 'success'
+        ? 'bg-green-200'
+        : type === 'warning'
+          ? 'bg-yellow-300'
+          : 'bg-gray-200';
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 12,
-        right: 12,
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-      }}
-    >
+    <div className="fixed top-3 right-3 z-[9999] flex flex-col gap-2">
       {toasts.map((t) => (
-        <div
+        <button
           key={t.id}
           onClick={() => remove(t.id)}
-          style={{
-            padding: '10px 12px',
-            borderRadius: 8,
-            color: '#111',
-            background:
-              t.type === 'error'
-                ? '#fecaca'
-                : t.type === 'success'
-                  ? '#bbf7d0'
-                  : t.type === 'warning'
-                    ? '#fde68a'
-                    : '#e5e7eb',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
-          }}
+          className={`text-[#111] ${bgClass(t.type)} rounded-lg px-3 py-2 shadow-md text-left`}
         >
           {t.message}
-        </div>
+        </button>
       ))}
     </div>
   );

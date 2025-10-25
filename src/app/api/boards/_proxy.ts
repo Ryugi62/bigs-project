@@ -7,6 +7,7 @@ import {
   jsonOk,
   ensureCsrfCookie,
   getCsrfCookie,
+  ERROR_CODES,
 } from '@/lib/http';
 
 /** Build upstream path including query string */
@@ -29,7 +30,7 @@ export async function handleBoardsNoBody(
       const header = req.headers.get('x-csrf-token');
       const token = await getCsrfCookie();
       if (!header || !token || header !== token) {
-        return jsonError(403, 'Invalid CSRF token', undefined, 'CSRF_INVALID');
+        return jsonError(403, 'Invalid CSRF token', undefined, ERROR_CODES.CSRF_INVALID);
       }
     }
     const token = await getAccessToken();
@@ -37,7 +38,8 @@ export async function handleBoardsNoBody(
     const { data, status } = await upstream(method, url, { token });
     return jsonOk(data, { status });
   } catch (e) {
-    const code = method === 'GET' ? 'BOARDS_FETCH_FAILED' : 'BOARDS_DELETE_FAILED';
+    const code =
+      method === 'GET' ? ERROR_CODES.BOARDS_FETCH_FAILED : ERROR_CODES.BOARDS_DELETE_FAILED;
     if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
     return jsonError(500, 'Boards request failed', undefined, code);
   }
@@ -53,7 +55,7 @@ export async function handleBoardsWithBody(
     const header = req.headers.get('x-csrf-token');
     const tokenCookie = await getCsrfCookie();
     if (!header || !tokenCookie || header !== tokenCookie) {
-      return jsonError(403, 'Invalid CSRF token', undefined, 'CSRF_INVALID');
+      return jsonError(403, 'Invalid CSRF token', undefined, ERROR_CODES.CSRF_INVALID);
     }
     const token = await getAccessToken();
     const body = await req.json();
@@ -63,10 +65,10 @@ export async function handleBoardsWithBody(
   } catch (e) {
     const code =
       method === 'POST'
-        ? 'BOARDS_CREATE_FAILED'
+        ? ERROR_CODES.BOARDS_CREATE_FAILED
         : method === 'PUT'
-          ? 'BOARDS_UPDATE_FAILED'
-          : 'BOARDS_PATCH_FAILED';
+          ? ERROR_CODES.BOARDS_UPDATE_FAILED
+          : ERROR_CODES.BOARDS_PATCH_FAILED;
     if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
     return jsonError(500, 'Boards request failed', undefined, code);
   }

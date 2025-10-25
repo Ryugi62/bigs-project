@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { decodeJwt, JwtPayload } from '@/lib/auth/jwt';
-import { upstream, HttpError, jsonError, jsonOk, setAuthCookies } from '@/lib/http';
+import { upstream, HttpError, jsonError, jsonOk, setAuthCookies, ERROR_CODES } from '@/lib/http';
 
 export const runtime = 'nodejs';
 
@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
 
     return jsonOk({ user: payload ? { name: payload.name, username: payload.username } : null });
   } catch (e) {
-    if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, 'SIGNIN_FAILED');
-    return jsonError(500, 'Signin failed', undefined, 'SIGNIN_FAILED');
+    if (e instanceof HttpError)
+      return jsonError(e.status, e.message, e.data, ERROR_CODES.SIGNIN_FAILED);
+    return jsonError(500, 'Signin failed', undefined, ERROR_CODES.SIGNIN_FAILED);
   }
 }

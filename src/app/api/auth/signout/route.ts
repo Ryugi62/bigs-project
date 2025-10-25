@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { clearAuthCookies, jsonError, getCsrfCookie } from '@/lib/http';
+import { clearAuthCookies, jsonError, getCsrfCookie, ERROR_CODES } from '@/lib/http';
 
 export const runtime = 'nodejs';
 
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const cookieToken = await getCsrfCookie();
   const header = req.headers.get('x-csrf-token');
   if (!cookieToken || !header || header !== cookieToken) {
-    return jsonError(403, 'Invalid CSRF token', undefined, 'CSRF_INVALID');
+    return jsonError(403, 'Invalid CSRF token', undefined, ERROR_CODES.CSRF_INVALID);
   }
   await clearAuthCookies();
   return new Response(null, { status: 200 });
