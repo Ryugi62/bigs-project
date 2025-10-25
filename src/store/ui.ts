@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type UiState = {
   isSidebarOpen: boolean;
@@ -13,4 +13,3 @@ export const useUiStore = create<UiState>((set) => ({
   closeSidebar: () => set({ isSidebarOpen: false }),
   toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
 }));
-
