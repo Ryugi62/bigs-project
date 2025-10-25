@@ -50,7 +50,7 @@ export default function HeaderComponent() {
   return (
     <>
       <header className="sticky top-0 z-100000 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="sticky z-1000 max-w-[1400px] h-[77px] flex items-center mx-auto px-4">
+        <div className="sticky z-1000 max-w-[1400px] h-[77px] mx-auto px-4 grid grid-cols-3 items-center">
           <Link
             href="/"
             className="flex items-center gap-2"
@@ -64,7 +64,7 @@ export default function HeaderComponent() {
           </Link>
 
           <nav
-            className="hidden gap-20 h-full md:flex items-center gap-1 ml-auto"
+            className="hidden md:flex items-center justify-center col-start-2 gap-6 h-full"
             aria-label="주요 메뉴"
           >
             {NAV_ITEMS.map((item) => (
@@ -83,7 +83,7 @@ export default function HeaderComponent() {
             aria-expanded={open}
             aria-label={open ? "모바일 메뉴 닫기" : "모바일 메뉴 열기"}
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden ml-auto inline-flex items-center justify-center w-11 h-11"
+            className="md:hidden col-start-3 justify-self-end inline-flex items-center justify-center w-11 h-11"
           >
             <span
               aria-hidden="true"
