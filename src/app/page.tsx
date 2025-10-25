@@ -1,9 +1,9 @@
-import HeaderComponent from "@/app/components/header"
+import Header from '@/app/components/Header';
 
 export default function Home() {
   return (
     <div className="h-full">
-      <HeaderComponent />
+      <Header />
     </div>
   );
 }

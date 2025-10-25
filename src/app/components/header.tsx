@@ -34,7 +34,7 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   );
 }
 
-export default function HeaderComponent() {
+export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
