@@ -57,8 +57,8 @@ export default function HeaderComponent() {
 
   return (
     <>
-      <header className="sticky top-0 z-100000 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="sticky z-1000 max-w-[1400px] h-[77px] mx-auto px-4 grid grid-cols-3 items-center">
+      <header className="sticky top-0 z-[100000] bg-white/90 backdrop-blur border-b border-gray-200">
+        <div className="sticky z-[1000] max-w-[1400px] h-[77px] mx-auto px-4 grid grid-cols-3 items-center">
           <Link href="/" className="flex items-center gap-2" aria-label="Ȩ���� �̵�">
             <Image src={LogoImage} alt="Logo" className="object-contain h-[32px] w-auto" />
           </Link>
