@@ -1,7 +1,10 @@
 import { decodeJwt, JwtPayload } from '@/lib/auth/jwt';
-import { jsonError, jsonOk, getAccessToken } from '@/lib/http';
+import { jsonError, jsonOk, getAccessToken, ensureCsrfCookie } from '@/lib/http';
+
+export const runtime = 'nodejs';
 
 export async function GET() {
+  await ensureCsrfCookie();
   const access = await getAccessToken();
   if (!access) return jsonError(401, 'Unauthorized', undefined, 'UNAUTHORIZED');
   const payload = decodeJwt<JwtPayload>(access);
