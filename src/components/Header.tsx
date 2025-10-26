@@ -17,7 +17,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const navItemBase =
-  "group relative inline-grid items-baseline justify-items-start pr-4 py-2 text-sm font-semibold uppercase tracking-[0.25em] transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-current after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full";
+  "group relative inline-grid items-baseline justify-items-start pr-4 py-2 text-sm font-semibold uppercase tracking-[0.25em] transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full";
 
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
@@ -103,10 +103,10 @@ export default function HeaderComponent() {
                 aria-hidden="true"
                 className={cx(
                   'relative block h-px w-6 transition-all duration-[0.5s]',
-                  open ? 'bg-transparent' : 'bg-current',
-                  "before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s]",
+                  open ? 'bg-transparent' : 'bg-[#333]',
+                  "before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-[#333] before:origin-center before:transition-transform before:duration-[0.5s]",
                   open ? 'before:-translate-y-1/2 before:rotate-45' : 'before:-translate-y-[7px]',
-                  "after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s]",
+                  "after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-[#333] after:origin-center after:transition-transform after:duration-[0.5s]",
                   open ? 'after:-translate-y-1/2 after:-rotate-45' : 'after:translate-y-[7px]',
                 )}
               />
