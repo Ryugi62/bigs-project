@@ -2,6 +2,7 @@ import Link from 'next/link';
 import CategoryBadge from '@/components/ui/CategoryBadge';
 import { buttonClasses } from '@/components/ui/Button';
 import { getBoardDetail } from '@/app/(main)/boards/_lib/getBoardDetail';
+import ProtectedLink from '@/components/auth/ProtectedLink';
 
 const formatter = new Intl.DateTimeFormat('ko-KR', {
   year: 'numeric',
@@ -55,12 +56,14 @@ export default async function BoardDetailPage({ params }: { params: { id: string
           목록으로 돌아가기
         </Link>
         <div className="flex flex-wrap gap-3">
-          <Link
+          <ProtectedLink
             href={`/boards/${board.id}/edit`}
+            nextPath={`/boards/${board.id}/edit`}
+            reason="게시글 수정은 로그인한 사용자만 이용하실 수 있어요."
             className={buttonClasses({ variant: 'secondary' })}
           >
             글 수정
-          </Link>
+          </ProtectedLink>
           <button type="button" className={buttonClasses({ variant: 'ghost' })}>
             삭제 요청
           </button>

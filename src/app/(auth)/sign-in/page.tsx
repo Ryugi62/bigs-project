@@ -16,7 +16,22 @@ const highlights = [
   },
 ];
 
-export default function SignInPage() {
+type SignInPageProps = {
+  searchParams?: Record<string, string | string[]>;
+};
+
+export default function SignInPage({ searchParams }: SignInPageProps) {
+  const params = searchParams ?? {};
+  const reasonParam = params.reason;
+  const rawReason = Array.isArray(reasonParam) ? reasonParam[0] : reasonParam;
+  const reason = (() => {
+    if (!rawReason) return undefined;
+    try {
+      return decodeURIComponent(rawReason);
+    } catch {
+      return rawReason;
+    }
+  })();
   return (
     <>
       <AuthShowcase
@@ -24,7 +39,7 @@ export default function SignInPage() {
         subtitle="통합된 사내 커뮤니케이션으로 장애 대응 시간을 단축하고, 팀과 지식을 공유하세요."
         highlights={highlights}
       />
-      <SignInForm />
+      <SignInForm notice={reason ? reason : undefined} />
     </>
   );
 }

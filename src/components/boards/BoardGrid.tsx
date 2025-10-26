@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import { useBoardsQuery } from '@/lib/query/boards';
 import type { BoardsQueryOptions } from '@/lib/query/boards';
 import type { BoardCategory } from '@/types/boards';
@@ -10,6 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { buttonClasses } from '@/components/ui/Button';
 import { cx } from '@/lib/cx';
 import { useAuthStore } from '@/store/auth';
+import ProtectedLink from '@/components/auth/ProtectedLink';
 
 const categoryTabs: Array<{ key: BoardCategory | 'ALL'; label: string }> = [
   { key: 'ALL', label: '전체' },
@@ -78,9 +78,14 @@ export default function BoardGrid() {
               </svg>
             </span>
           </div>
-          <Link href="/boards/new" className={buttonClasses()}>
+          <ProtectedLink
+            href="/boards/new"
+            nextPath="/boards/new"
+            reason="게시글 작성은 로그인한 사용자만 이용하실 수 있어요."
+            className={buttonClasses()}
+          >
             새 글 작성
-          </Link>
+          </ProtectedLink>
         </div>
       </div>
 

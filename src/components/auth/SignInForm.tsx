@@ -10,7 +10,11 @@ import { useSignInMutation } from '@/lib/query/auth';
 import { ClientError } from '@/lib/http/client';
 import { useToastStore } from '@/store/toast';
 
-export default function SignInForm() {
+type SignInFormProps = {
+  notice?: string;
+};
+
+export default function SignInForm({ notice }: SignInFormProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +53,14 @@ export default function SignInForm() {
           사내 운영 대시보드 접속을 위해 계정으로 로그인하세요.
         </p>
       </div>
+      {notice && (
+        <div className="mt-6 flex items-start gap-3 rounded-2xl bg-[#f2f6ff] px-4 py-3 text-sm text-[#1c2b65] shadow-[0_12px_36px_rgba(12,24,64,0.12)]">
+          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1c2b65] text-xs font-semibold text-white">
+            !
+          </span>
+          <p className="leading-relaxed">{notice}</p>
+        </div>
+      )}
       <form className="mt-8 flex flex-col gap-6" onSubmit={handleSubmit}>
         <FormField
           label="이메일"
