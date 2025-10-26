@@ -6,23 +6,27 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LogoImage from '@/app/assets/logo.png';
 import { cx } from '@/lib/cx';
+import { buttonClasses } from '@/components/ui/Button';
 
 type NavItem = { label: string; href: string };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Menu1', href: '/menu1' },
-  { label: 'Menu2', href: '/menu2' },
-  { label: 'Menu3', href: '/menu3' },
+  { label: 'OpsHub', href: '/' },
+  { label: '게시판', href: '/boards' },
+  { label: '새 글쓰기', href: '/boards/new' },
 ];
 
 const navItemBase =
-  "group relative inline-grid items-baseline justify-items-start pr-6 py-2 transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-[#333] after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full";
+  "group relative inline-grid items-baseline justify-items-start pr-4 py-2 text-sm font-semibold uppercase tracking-[0.25em] transition-colors after:content-[''] after:absolute after:left-0 after:bottom-0 after:block after:h-[2px] after:bg-current after:w-0 after:transition-[width] after:duration-300 after:ease-out hover:after:w-full focus-visible:after:w-full";
 
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
       href={item.href}
-      className={cx(navItemBase, isActive ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900')}
+      className={cx(
+        navItemBase,
+        isActive ? 'text-[#1c2b65]' : 'text-[#4a5678] hover:text-[#1c2b65]',
+      )}
       aria-current={isActive ? 'page' : undefined}
     >
       <span
@@ -61,14 +65,14 @@ export default function HeaderComponent() {
 
   return (
     <>
-      <header className="sticky top-0 z-[100000] bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="sticky z-[1000] max-w-[1400px] h-[77px] mx-auto px-4 grid grid-cols-3 items-center">
+      <header className="sticky top-0 z-[100000] border-b border-white/60 bg-white/80 backdrop-blur">
+        <div className="mx-auto grid h-[77px] w-full max-w-[1400px] grid-cols-[auto,1fr,auto] items-center gap-6 px-4">
           <Link href="/" className="flex items-center gap-2" aria-label="홈으로 이동">
-            <Image src={LogoImage} alt="Logo" className="object-contain h-[32px] w-auto" />
+            <Image src={LogoImage} alt="Logo" className="h-[32px] w-auto object-contain" />
           </Link>
 
           <nav
-            className="hidden md:flex items-center justify-center col-start-2 gap-20 h-full"
+            className="col-start-2 hidden h-full items-center justify-center gap-16 md:flex"
             aria-label="주요 메뉴"
           >
             {NAV_ITEMS.map((item) => (
@@ -76,27 +80,38 @@ export default function HeaderComponent() {
             ))}
           </nav>
 
-          <span
-            role="button"
-            tabIndex={0}
-            aria-controls="mobile-menu"
-            aria-expanded={open}
-            aria-label={open ? '모바일 메뉴 닫기' : '모바일 메뉴 열기'}
-            onClick={() => setOpen((v) => !v)}
-            className="md:hidden col-start-3 justify-self-end inline-flex items-center justify-center w-11 h-11"
-          >
+          <div className="col-start-3 flex items-center justify-end gap-4">
+            <Link
+              href="/sign-in"
+              className={cx('hidden md:inline-flex', buttonClasses({ variant: 'ghost' }))}
+            >
+              로그인
+            </Link>
+            <Link href="/sign-up" className={cx('hidden md:inline-flex', buttonClasses({}))}>
+              회원가입
+            </Link>
             <span
-              aria-hidden="true"
-              className={cx(
-                'relative block w-6 h-px transition-all duration-[0.5s]',
-                open ? 'bg-transparent' : 'bg-current',
-                "before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s]",
-                open ? 'before:-translate-y-1/2 before:rotate-45' : 'before:-translate-y-[7px]',
-                "after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s]",
-                open ? 'after:-translate-y-1/2 after:-rotate-45' : 'after:translate-y-[7px]',
-              )}
-            />
-          </span>
+              role="button"
+              tabIndex={0}
+              aria-controls="mobile-menu"
+              aria-expanded={open}
+              aria-label={open ? '모바일 메뉴 닫기' : '모바일 메뉴 열기'}
+              onClick={() => setOpen((v) => !v)}
+              className="inline-flex h-11 w-11 items-center justify-center md:hidden"
+            >
+              <span
+                aria-hidden="true"
+                className={cx(
+                  'relative block h-px w-6 transition-all duration-[0.5s]',
+                  open ? 'bg-transparent' : 'bg-current',
+                  "before:content-[''] before:absolute before:left-0 before:top-1/2 before:block before:h-px before:w-full before:bg-current before:origin-center before:transition-transform before:duration-[0.5s]",
+                  open ? 'before:-translate-y-1/2 before:rotate-45' : 'before:-translate-y-[7px]',
+                  "after:content-[''] after:absolute after:left-0 after:top-1/2 after:block after:h-px after:w-full after:bg-current after:origin-center after:transition-transform after:duration-[0.5s]",
+                  open ? 'after:-translate-y-1/2 after:-rotate-45' : 'after:translate-y-[7px]',
+                )}
+              />
+            </span>
+          </div>
         </div>
       </header>
 
@@ -124,14 +139,28 @@ export default function HeaderComponent() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cx(
-                  'text-lg px-3 py-3 rounded-md',
-                  isActive(item.href) ? 'text-blue-600' : 'text-gray-700 hover:text-gray-900',
+                  'rounded-md px-3 py-3 text-lg',
+                  isActive(item.href) ? 'text-[#1c2b65]' : 'text-[#4a5678] hover:text-[#1c2b65]',
                 )}
                 aria-current={isActive(item.href) ? 'page' : undefined}
               >
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+              className="mt-6 rounded-full bg-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-white"
+            >
+              로그인
+            </Link>
+            <Link
+              href="/sign-up"
+              onClick={() => setOpen(false)}
+              className="rounded-full border border-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-[#1c2b65]"
+            >
+              회원가입
+            </Link>
           </nav>
         </div>
       </div>
