@@ -37,6 +37,7 @@ export default function SignUpForm() {
       await signUp.mutateAsync({ name, username, password, confirmPassword });
       pushToast({ type: 'success', message: '회원가입이 완료되었습니다.' });
       await signIn.mutateAsync({ username, password });
+      pushToast({ type: 'success', message: '로그인에 성공했어요.' });
       router.push('/');
     } catch (err) {
       if (err instanceof ClientError) {
