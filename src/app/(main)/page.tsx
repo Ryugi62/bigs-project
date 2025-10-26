@@ -17,6 +17,9 @@ async function getInitialBoards(): Promise<Board[]> {
     return mapListToBoards(data);
   } catch (error) {
     if (error instanceof HttpError) {
+      if (error.status === 401 || error.status === 403) {
+        return [];
+      }
       console.error('Failed to prefetch boards', error.status, error.message);
       return [];
     }
