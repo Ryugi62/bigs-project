@@ -52,11 +52,12 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
   const mutation = useMutation({
     mutationKey: ['boards', mode, boardId],
     mutationFn: async (payload: FormState) => {
+      const formData = buildFormData(payload);
       if (mode === 'edit' && boardId) {
-        await put(`/boards/${boardId}`, payload);
+        await put(`/boards/${boardId}`, formData);
         return;
       }
-      await post('/boards', payload);
+      await post('/boards', formData);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['boards'] });
@@ -79,8 +80,9 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
       await mutation.mutateAsync(form);
     } catch (err) {
       if (err instanceof ClientError) {
-        setError(err.message);
-        pushToast({ type: 'error', message: err.message });
+        const message = extractErrorMessage(err.details) ?? err.message;
+        setError(message);
+        pushToast({ type: 'error', message });
       } else {
         setError('요청을 처리하는 중 문제가 발생했습니다.');
         pushToast({ type: 'error', message: '게시글 저장에 실패했습니다.' });
@@ -169,4 +171,31 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
       </div>
     </form>
   );
+}
+
+function extractErrorMessage(details: unknown): string | undefined {
+  if (!details) return undefined;
+  if (typeof details === 'string') return details;
+  if (Array.isArray(details)) {
+    for (const entry of details) {
+      const msg = extractErrorMessage(entry);
+      if (msg) return msg;
+    }
+    return undefined;
+  }
+  if (typeof details === 'object') {
+    for (const value of Object.values(details as Record<string, unknown>)) {
+      const msg = extractErrorMessage(value);
+      if (msg) return msg;
+    }
+  }
+  return undefined;
+}
+
+function buildFormData(form: FormState) {
+  const data = new FormData();
+  data.append('title', form.title);
+  data.append('content', form.content);
+  data.append('boardCategory', form.boardCategory);
+  return data;
 }
