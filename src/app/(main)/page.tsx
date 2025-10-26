@@ -13,6 +13,9 @@ import { HttpError } from '@/lib/http/upstream';
 async function getInitialBoards(): Promise<Board[]> {
   try {
     const token = await getAccessToken();
+    if (!token) {
+      return [];
+    }
     const { data } = await upstream<BoardListResponse>('GET', '/boards?page=0&size=10', { token });
     return mapListToBoards(data);
   } catch (error) {

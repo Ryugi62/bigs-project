@@ -7,7 +7,10 @@ export type BoardsQueryOptions = {
   size?: number;
   keyword?: string;
   category?: BoardCategory;
+  enabled?: boolean;
 };
+
+type RequestOptions = Omit<BoardsQueryOptions, 'enabled'>;
 
 export const mapListToBoards = (payload: BoardListResponse): Board[] =>
   payload.content.map((item) => ({
@@ -18,12 +21,9 @@ export const mapListToBoards = (payload: BoardListResponse): Board[] =>
     content: '',
   }));
 
-async function getBoards({
-  page = 0,
-  size = 10,
-  keyword,
-  category,
-}: BoardsQueryOptions = {}): Promise<Board[]> {
+async function getBoards({ page = 0, size = 10, keyword, category }: RequestOptions = {}): Promise<
+  Board[]
+> {
   const params: Record<string, unknown> = { page, size };
   if (keyword) params.keyword = keyword;
   if (category) params.category = category;
@@ -39,8 +39,10 @@ async function getBoards({
 }
 
 export function useBoardsQuery(options: BoardsQueryOptions = {}) {
+  const { enabled = true, ...requestOptions } = options;
   return useQuery({
-    queryKey: ['boards', options],
-    queryFn: () => getBoards(options),
+    queryKey: ['boards', requestOptions],
+    queryFn: () => getBoards(requestOptions),
+    enabled,
   });
 }

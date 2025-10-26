@@ -9,6 +9,7 @@ import BoardCard from '@/components/boards/BoardCard';
 import { Input } from '@/components/ui/Input';
 import { buttonClasses } from '@/components/ui/Button';
 import { cx } from '@/lib/cx';
+import { useAuthStore } from '@/store/auth';
 
 const categoryTabs: Array<{ key: BoardCategory | 'ALL'; label: string }> = [
   { key: 'ALL', label: '전체' },
@@ -21,12 +22,14 @@ const categoryTabs: Array<{ key: BoardCategory | 'ALL'; label: string }> = [
 export default function BoardGrid() {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState<BoardCategory | 'ALL'>('ALL');
+  const isAuthenticated = useAuthStore((state) => Boolean(state.user));
   const queryOptions = useMemo<BoardsQueryOptions>(
     () => ({
       ...(keyword ? { keyword } : {}),
       ...(category === 'ALL' ? {} : { category }),
+      enabled: isAuthenticated,
     }),
-    [keyword, category],
+    [keyword, category, isAuthenticated],
   );
   const { data, isLoading } = useBoardsQuery(queryOptions);
 
