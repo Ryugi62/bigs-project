@@ -41,8 +41,9 @@ export default function SignUpForm() {
       router.push('/');
     } catch (err) {
       if (err instanceof ClientError) {
-        setError(err.message);
-        pushToast({ type: 'error', message: err.message });
+        const detailMessage = extractErrorMessage(err.details) || err.message;
+        setError(detailMessage);
+        pushToast({ type: 'error', message: detailMessage });
       } else {
         setError('회원가입 중 오류가 발생했습니다.');
         pushToast({ type: 'error', message: '회원가입에 실패했습니다. 다시 시도해주세요.' });
@@ -119,4 +120,21 @@ export default function SignUpForm() {
       </p>
     </div>
   );
+}
+
+function extractErrorMessage(details: unknown): string | undefined {
+  if (!details) return undefined;
+  if (typeof details === 'string') return details;
+  if (Array.isArray(details)) {
+    const first = details.map(extractErrorMessage).find(Boolean);
+    if (first) return first;
+  }
+  if (typeof details === 'object') {
+    const entries = Object.values(details as Record<string, unknown>);
+    const nested = entries
+      .map((value) => extractErrorMessage(value))
+      .find((message) => typeof message === 'string' && message.length > 0);
+    return nested;
+  }
+  return undefined;
 }
