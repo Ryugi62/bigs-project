@@ -23,6 +23,13 @@ async function getInitialBoards(): Promise<Board[]> {
       console.error('Failed to prefetch boards', error.status, error.message);
       return [];
     }
+    if (
+      error instanceof Error &&
+      (error.message.includes('ENOTFOUND') || error.message.includes('getaddrinfo'))
+    ) {
+      console.warn('Skipping board prefetch: upstream host unreachable.');
+      return [];
+    }
     throw error;
   }
 }
