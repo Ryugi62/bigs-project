@@ -62,9 +62,31 @@ export async function handleBoardsWithBody(
       return jsonError(403, 'Invalid CSRF token', undefined, ERROR_CODES.CSRF_INVALID);
     }
     const token = await getAccessToken();
-    const body = await req.json();
+    const contentType = req.headers.get('content-type') || '';
+    let body: unknown;
+    let headers: Record<string, string> | undefined;
+    if (contentType.includes('multipart/form-data')) {
+      const buffer = Buffer.from(await req.arrayBuffer());
+      body = buffer;
+      headers = {
+        'Content-Type': contentType,
+        'Content-Length': String(buffer.length),
+      };
+    } else if (contentType.includes('application/json')) {
+      body = await req.json();
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      body = await req.text();
+      headers = { 'Content-Type': contentType };
+    } else if (contentType) {
+      const buffer = Buffer.from(await req.arrayBuffer());
+      body = buffer;
+      headers = {
+        'Content-Type': contentType,
+        'Content-Length': String(buffer.length),
+      };
+    }
     const url = buildBoardsPath(req, segments || []);
-    const { data, status } = await upstream(method, url, { token, body });
+    const { data, status } = await upstream(method, url, { token, body, headers });
     return jsonOk(data, { status });
   } catch (e) {
     const code =

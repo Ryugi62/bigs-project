@@ -20,7 +20,6 @@ function getUpstream(): AxiosInstance {
       baseURL: API_BASE,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
         Accept: 'application/json',
       },
       // no cookies to upstream
