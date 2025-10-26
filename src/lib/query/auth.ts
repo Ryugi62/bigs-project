@@ -23,8 +23,14 @@ export function useSignInMutation() {
   return useMutation({
     mutationKey: ['auth', 'signin'],
     mutationFn: (body: SignInBody) => signIn(body),
-    onSuccess: (data: SignInResponse) => {
+    onSuccess: async (data: SignInResponse) => {
       setUser(data.user ?? null);
+      try {
+        const me = await fetchMe();
+        setUser(me.user ?? data.user ?? null);
+      } catch {
+        // ignore fetch-me failure; user may be unauthenticated
+      }
       qc.invalidateQueries({ queryKey: ['boards'] });
     },
   });
