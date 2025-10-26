@@ -24,17 +24,12 @@ export async function request<T = unknown>(
   },
 ): Promise<T> {
   try {
-    const isFormData = typeof FormData !== 'undefined' && options?.data instanceof FormData;
-    const headers: Record<string, string> = { ...(options?.headers || {}) };
-    if (isFormData) {
-      headers['Content-Type'] = 'multipart/form-data';
-    }
     const res = await api.request<T>({
       method,
       url,
       data: options?.data,
       params: options?.params,
-      headers,
+      headers: options?.headers,
     });
     return res.data;
   } catch (err) {

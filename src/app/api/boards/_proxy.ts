@@ -40,7 +40,11 @@ export async function handleBoardsNoBody(
   } catch (e) {
     const code =
       method === 'GET' ? ERROR_CODES.BOARDS_FETCH_FAILED : ERROR_CODES.BOARDS_DELETE_FAILED;
-    if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
+    if (e instanceof HttpError) {
+      console.error('Boards proxy error', method, req.url, e.status, e.message, e.data);
+      return jsonError(e.status, e.message, e.data, code);
+    }
+    console.error('Boards proxy unexpected error', method, req.url, e);
     return jsonError(500, 'Boards request failed', undefined, code);
   }
 }
@@ -69,7 +73,11 @@ export async function handleBoardsWithBody(
         : method === 'PUT'
           ? ERROR_CODES.BOARDS_UPDATE_FAILED
           : ERROR_CODES.BOARDS_PATCH_FAILED;
-    if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
+    if (e instanceof HttpError) {
+      console.error('Boards proxy error', method, req.url, e.status, e.message, e.data);
+      return jsonError(e.status, e.message, e.data, code);
+    }
+    console.error('Boards proxy unexpected error', method, req.url, e);
     return jsonError(500, 'Boards request failed', undefined, code);
   }
 }

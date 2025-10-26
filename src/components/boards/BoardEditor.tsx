@@ -52,12 +52,11 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
   const mutation = useMutation({
     mutationKey: ['boards', mode, boardId],
     mutationFn: async (payload: FormState) => {
-      const formData = buildFormData(payload);
       if (mode === 'edit' && boardId) {
-        await put(`/boards/${boardId}`, formData);
+        await put(`/boards/${boardId}`, payload);
         return;
       }
-      await post('/boards', formData);
+      await post('/boards', payload);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['boards'] });
@@ -190,12 +189,4 @@ function extractErrorMessage(details: unknown): string | undefined {
     }
   }
   return undefined;
-}
-
-function buildFormData(form: FormState) {
-  const data = new FormData();
-  data.append('title', form.title);
-  data.append('content', form.content);
-  data.append('boardCategory', form.boardCategory);
-  return data;
 }
