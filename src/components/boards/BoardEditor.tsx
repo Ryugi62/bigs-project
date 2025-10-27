@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
-import { post, put } from '@/lib/http/client';
+import { ClientError, post, put } from '@/lib/http/client';
+import { extractErrorMessage } from '@/lib/http/error-message';
 import type { BoardCategory } from '@/types/boards';
 import { useToastStore } from '@/store/toast';
-import { ClientError } from '@/lib/http/client';
 
 const categories: Array<{ value: BoardCategory; label: string }> = [
   { value: 'NOTICE', label: '공지' },
@@ -171,25 +171,6 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
       </div>
     </form>
   );
-}
-
-function extractErrorMessage(details: unknown): string | undefined {
-  if (!details) return undefined;
-  if (typeof details === 'string') return details;
-  if (Array.isArray(details)) {
-    for (const entry of details) {
-      const msg = extractErrorMessage(entry);
-      if (msg) return msg;
-    }
-    return undefined;
-  }
-  if (typeof details === 'object') {
-    for (const value of Object.values(details as Record<string, unknown>)) {
-      const msg = extractErrorMessage(value);
-      if (msg) return msg;
-    }
-  }
-  return undefined;
 }
 
 function buildFormData(form: FormState) {

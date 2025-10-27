@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useSignUpMutation, useSignInMutation } from '@/lib/query/auth';
 import { ClientError } from '@/lib/http/client';
+import { extractErrorMessage } from '@/lib/http/error-message';
 import { useToastStore } from '@/store/toast';
 
 export default function SignUpForm() {
@@ -120,21 +121,4 @@ export default function SignUpForm() {
       </p>
     </div>
   );
-}
-
-function extractErrorMessage(details: unknown): string | undefined {
-  if (!details) return undefined;
-  if (typeof details === 'string') return details;
-  if (Array.isArray(details)) {
-    const first = details.map(extractErrorMessage).find(Boolean);
-    if (first) return first;
-  }
-  if (typeof details === 'object') {
-    const entries = Object.values(details as Record<string, unknown>);
-    const nested = entries
-      .map((value) => extractErrorMessage(value))
-      .find((message) => typeof message === 'string' && message.length > 0);
-    return nested;
-  }
-  return undefined;
 }
