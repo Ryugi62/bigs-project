@@ -8,7 +8,7 @@ export default function AuthShowcase({
   highlights: Array<{ title: string; description: string }>;
 }) {
   return (
-    <aside className="hidden w-full max-w-[460px] flex-col justify-between rounded-[32px] border border-white/20 bg-white/5 p-10 backdrop-blur lg:flex">
+    <aside className="hidden w-full max-w-[460px] flex-col justify-between rounded-[32px] backdrop-blur lg:flex">
       <div className="space-y-6">
         <p className="text-sm font-semibold uppercase tracking-[0.4em] text-white/60">
           BIGS PAYMENTS
