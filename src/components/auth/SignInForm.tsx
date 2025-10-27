@@ -125,9 +125,6 @@ export default function SignInForm({ notice }: SignInFormProps) {
               <input type="checkbox" className="h-4 w-4 rounded border-[#c8d3f0] text-[#1c2b65]" />
               로그인 상태 유지
             </label>
-            <Link href="/support" className="font-semibold text-[#1c2b65] hover:underline">
-              비밀번호 찾기
-            </Link>
           </div>
           <Button type="submit" disabled={isPending}>
             {isPending ? '로그인 중...' : '로그인'}
@@ -208,9 +205,6 @@ export default function SignInForm({ notice }: SignInFormProps) {
                   />
                   로그인 상태 유지
                 </label>
-                <Link href="/support" className="font-semibold text-[#1c2b65]">
-                  비밀번호 찾기
-                </Link>
               </div>
               <div className="flex flex-col gap-2 pb-[calc(env(safe-area-inset-bottom,0)+4px)]">
                 <Button type="submit" disabled={isPending} fullWidth>

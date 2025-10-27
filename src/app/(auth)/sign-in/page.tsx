@@ -17,12 +17,11 @@ const highlights = [
 ];
 
 type SignInPageProps = {
-  searchParams?: Record<string, string | string[]> | Promise<Record<string, string | string[]>>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
-  const paramsRaw = searchParams ?? {};
-  const params = isPromise(paramsRaw) ? await paramsRaw : paramsRaw;
+  const params = searchParams ? await searchParams : {};
   const reasonParam = params.reason;
   const rawReason = Array.isArray(reasonParam) ? reasonParam[0] : reasonParam;
   const reason = (() => {
@@ -42,11 +41,5 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       />
       <SignInForm notice={reason ? reason : undefined} />
     </>
-  );
-}
-
-function isPromise<T>(value: unknown): value is Promise<T> {
-  return (
-    typeof value === 'object' && value !== null && 'then' in (value as Record<string, unknown>)
   );
 }
