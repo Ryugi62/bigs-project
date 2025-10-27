@@ -10,15 +10,13 @@ import { Select } from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import { ClientError, post, put } from '@/lib/http/client';
 import { extractErrorMessage } from '@/lib/http/error-message';
+import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 import type { BoardCategory } from '@/types/boards';
 import { useToastStore } from '@/store/toast';
 
-const categories: Array<{ value: BoardCategory; label: string }> = [
-  { value: 'NOTICE', label: '공지' },
-  { value: 'FREE', label: '자유' },
-  { value: 'QNA', label: 'Q&A' },
-  { value: 'ETC', label: '기타' },
-];
+const categories: Array<{ value: BoardCategory; label: string }> = (
+  Object.entries(BOARD_CATEGORY_LABELS) as Array<[BoardCategory, string]>
+).map(([value, label]) => ({ value, label }));
 
 type BoardEditorProps = {
   mode: 'create' | 'edit';

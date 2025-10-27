@@ -1,5 +1,6 @@
 import type { BoardCategory } from '@/types/boards';
 import { cx } from '@/lib/cx';
+import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 
 const categoryStyles: Record<BoardCategory, string> = {
   NOTICE: 'bg-[#fff0e0] text-[#a65700] border-[#ffd3a1]',
@@ -16,7 +17,7 @@ export default function CategoryBadge({ category }: { category: BoardCategory })
         categoryStyles[category],
       )}
     >
-      {category}
+      {BOARD_CATEGORY_LABELS[category] ?? category}
     </span>
   );
 }

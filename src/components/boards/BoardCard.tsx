@@ -22,6 +22,8 @@ function stripHtml(value: string) {
 
 export default function BoardCard({ board }: BoardCardProps) {
   const createdAt = formatter.format(new Date(board.createdAt));
+  const fallbackPreview = board.content ? stripHtml(board.content) : '';
+  const preview = board.preview ?? fallbackPreview;
   return (
     <Link
       href={`/boards/${board.id}`}
@@ -38,7 +40,7 @@ export default function BoardCard({ board }: BoardCardProps) {
         {board.title}
       </h2>
       <p className="line-clamp-3 text-base text-[#425079] text-balance">
-        {stripHtml(board.content)}
+        {preview ? preview : '상세 페이지에서 전문을 확인하세요.'}
       </p>
       {board.author && (
         <div className="flex items-center gap-2 text-sm font-medium text-[#1c2b65] opacity-80">
