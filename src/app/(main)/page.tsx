@@ -22,6 +22,7 @@ async function getInitialBoards(): Promise<BoardsPage> {
       };
     }
     const params = new URLSearchParams({ page: '0', size: String(LATEST_LIMIT) });
+    params.set('sort', 'createdAt,DESC');
     const { data } = await upstream<BoardListResponse>('GET', `/boards?${params.toString()}`, {
       token,
     });
