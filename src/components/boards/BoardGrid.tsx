@@ -126,7 +126,7 @@ export default function BoardGrid() {
             >
               새 글 작성
             </ProtectedLink>
-            <SeedBoardsButton count={100} />
+            <SeedBoardsButton count={10} />
           </div>
         }
       />

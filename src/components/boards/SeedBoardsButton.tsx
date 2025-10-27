@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/auth';
 
 const ENABLE_SEED_BUTTON = process.env.NEXT_PUBLIC_ENABLE_SEED_BUTTON === 'true';
 
-export default function SeedBoardsButton({ count = 100 }: { count?: number }) {
+export default function SeedBoardsButton({ count = 10 }: { count?: number }) {
   const isAuthenticated = useAuthStore((state) => Boolean(state.user));
   const [confirming, setConfirming] = useState(false);
   const seedMutation = useSeedBoardsMutation();
