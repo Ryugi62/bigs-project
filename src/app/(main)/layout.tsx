@@ -1,11 +1,6 @@
-import Header from '@/components/Header';
-import SiteShell from '@/components/layout/SiteShell';
+import type { ReactNode } from 'react';
+import MainAppShell from '@/components/layout/MainAppShell';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[#edf1f9]">
-      <Header />
-      <SiteShell>{children}</SiteShell>
-    </div>
-  );
+export default function MainLayout({ children }: { children: ReactNode }) {
+  return <MainAppShell>{children}</MainAppShell>;
 }
