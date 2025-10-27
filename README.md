@@ -196,6 +196,9 @@ function ToggleSidebar() {
   - (호환) 기존: `NEXT_PUBLIC_API_BASE_URL=https://front-mission.bigs.or.kr`도 동작합니다.
   - 클라이언트는 `/api`만 호출합니다. 외부 API 호스트는 서버 프록시가 사용합니다.
   - 공통 클라이언트 파일: `src/lib/api/client.ts`
+- 면접용 더미 버튼: `NEXT_PUBLIC_ENABLE_SEED_BUTTON`
+  - `true`로 설정하면 게시판 상단에 “면접용 더미 100개 만들기” 버튼이 노출됩니다.
+  - 기본값은 `false`이며, 실운영 환경에서는 끄는 것을 권장합니다.
 
 ---
 
