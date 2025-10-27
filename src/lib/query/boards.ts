@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { ClientError, get } from '@/lib/http/client';
 import { BOARD_PAGE_SIZE } from '@/config/boards';
 import type { Board, BoardCategory, BoardListResponse } from '@/types/boards';
@@ -72,8 +72,14 @@ async function fetchBoardsPage({
   category,
 }: FetchBoardsOptions): Promise<BoardsPage> {
   const params: Record<string, unknown> = { page, size };
-  if (keyword) params.keyword = keyword;
-  if (category) params.category = category;
+  if (keyword) {
+    params.keyword = keyword;
+    params.search = keyword;
+  }
+  if (category) {
+    params.category = category;
+    params.boardCategory = category;
+  }
 
   try {
     const response = await get<BoardListResponse>('/boards', params);
@@ -115,6 +121,27 @@ export function useInfiniteBoardsQuery(options: BoardsQueryOptions = {}) {
         category: filters.category,
       }),
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
+    staleTime: 30_000,
+    gcTime: 300_000,
+  });
+}
+
+export const latestBoardsQueryKey = (size = 4, filters: BoardsFilters = {}) => {
+  const normalized = normalizeFilters(filters);
+  return ['boards', 'latest', size, JSON.stringify(normalized)] as const;
+};
+
+export function useLatestBoardsQuery(size = 4, filters: BoardsFilters = {}) {
+  const normalized = normalizeFilters(filters);
+  return useQuery({
+    queryKey: latestBoardsQueryKey(size, normalized),
+    queryFn: () =>
+      fetchBoardsPage({
+        page: 0,
+        size,
+        keyword: normalized.keyword,
+        category: normalized.category,
+      }),
     staleTime: 30_000,
     gcTime: 300_000,
   });

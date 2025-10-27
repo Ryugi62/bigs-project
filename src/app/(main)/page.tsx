@@ -1,15 +1,14 @@
 import PageHero from '@/components/layout/PageHero';
-import BoardGrid from '@/components/boards/BoardGrid';
+import LatestBoardsSection from '@/components/boards/LatestBoardsSection';
 import InsightBanner from '@/components/boards/InsightBanner';
 import TrendsRibbon from '@/components/boards/TrendsRibbon';
 import type { BoardListResponse } from '@/types/boards';
 import { getAccessToken } from '@/lib/http/cookies';
-import { upstream } from '@/lib/http/upstream';
+import { upstream, HttpError } from '@/lib/http/upstream';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import type { InfiniteData } from '@tanstack/react-query';
-import { BOARD_PAGE_SIZE } from '@/config/boards';
-import { mapListToBoards, boardsInfiniteQueryKey, type BoardsPage } from '@/lib/query/boards';
-import { HttpError } from '@/lib/http/upstream';
+import { mapListToBoards, latestBoardsQueryKey, type BoardsPage } from '@/lib/query/boards';
+
+const LATEST_LIMIT = 4;
 
 async function getInitialBoards(): Promise<BoardsPage> {
   try {
@@ -22,13 +21,12 @@ async function getInitialBoards(): Promise<BoardsPage> {
         totalElements: 0,
       };
     }
-    const { data } = await upstream<BoardListResponse>(
-      'GET',
-      `/boards?page=0&size=${BOARD_PAGE_SIZE}`,
-      { token },
-    );
+    const params = new URLSearchParams({ page: '0', size: String(LATEST_LIMIT) });
+    const { data } = await upstream<BoardListResponse>('GET', `/boards?${params.toString()}`, {
+      token,
+    });
     return {
-      items: mapListToBoards(data),
+      items: mapListToBoards(data).slice(0, LATEST_LIMIT),
       page: 0,
       hasMore: !data.last,
       totalElements: data.totalElements,
@@ -70,11 +68,7 @@ async function getInitialBoards(): Promise<BoardsPage> {
 export default async function HomePage() {
   const queryClient = new QueryClient();
   const boardsPage = await getInitialBoards();
-  const initialData: InfiniteData<BoardsPage> = {
-    pages: [boardsPage],
-    pageParams: [0],
-  };
-  queryClient.setQueryData(boardsInfiniteQueryKey({}), initialData);
+  queryClient.setQueryData(latestBoardsQueryKey(LATEST_LIMIT, {}), boardsPage);
   const state = dehydrate(queryClient);
 
   return (
@@ -87,7 +81,7 @@ export default async function HomePage() {
           actions={<TrendsRibbon />}
         />
         <InsightBanner />
-        <BoardGrid />
+        <LatestBoardsSection />
       </div>
     </HydrationBoundary>
   );
