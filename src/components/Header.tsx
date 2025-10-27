@@ -13,8 +13,9 @@ import { useSignOutMutation } from '@/lib/query/auth';
 type NavItem = { label: string; href: string };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'OpsHub', href: '/' },
-  { label: '게시판', href: '/boards' },
+  { label: '내 홈', href: '/' },
+  { label: '내 게시글', href: '/boards' },
+  { label: '새 글쓰기', href: '/boards/new' },
 ];
 
 const navItemBase =

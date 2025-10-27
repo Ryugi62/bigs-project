@@ -28,6 +28,8 @@ export default function BoardFilterBar({
   actions,
   isBusy,
 }: BoardFilterBarProps) {
+  const hasActiveFilters = category !== 'ALL' || keyword.trim().length > 0;
+
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-[#dfe4f4] bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:p-6">
       <div
@@ -53,8 +55,8 @@ export default function BoardFilterBar({
           </button>
         ))}
       </div>
-      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 lg:w-auto">
-        <div className="relative flex-1">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4 lg:w-auto">
+        <div className="relative flex-1 sm:max-w-xs lg:max-w-sm">
           <Input
             type="search"
             placeholder="키워드로 검색"
@@ -79,6 +81,21 @@ export default function BoardFilterBar({
             </svg>
           </span>
         </div>
+        {(onReset || actions) && (
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            {onReset && (
+              <button
+                type="button"
+                onClick={onReset}
+                className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
+                disabled={!hasActiveFilters}
+              >
+                필터 초기화
+              </button>
+            )}
+            {actions}
+          </div>
+        )}
       </div>
       <span className="sr-only" aria-live="polite">
         {isBusy ? '게시글을 불러오는 중입니다.' : '필터가 적용되었습니다.'}

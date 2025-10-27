@@ -47,9 +47,9 @@ export default async function HomePage() {
     <HydrationBoundary state={state}>
       <div className="flex flex-col gap-10">
         <PageHero
-          eyebrow="Operational Intelligence"
-          title="통합 게시판으로 운영 현황을 한눈에"
-          description="공지 · Q&A · 런북을 한 곳에서 확인하고, 팀과 빠르게 공유하세요. 실시간 알림과 심층 인사이트로 업무 효율을 높여드립니다."
+          eyebrow="My Ops Workspace"
+          title="내가 작성한 게시글을 한 곳에서 관리"
+          description="인증된 사용자 본인의 게시글만 안전하게 모아두고, 카테고리와 키워드로 빠르게 찾아 바로 수정하거나 삭제할 수 있어요."
           actions={<TrendsRibbon />}
         />
         <InsightBanner />

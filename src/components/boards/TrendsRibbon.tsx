@@ -1,7 +1,7 @@
 const highlights = [
-  { label: '오늘 등록된 신규 공지', value: '3건' },
-  { label: '대기 중 질문', value: '5건' },
-  { label: '처리 완료 런북', value: '12건' },
+  { label: '카테고리 필터', value: 'NOTICE · QNA · FREE · ETC' },
+  { label: '키워드 검색', value: '제목·본문 텍스트 즉시 찾기' },
+  { label: '작성한 글 관리', value: '등록 · 수정 · 삭제 지원' },
 ];
 
 export default function TrendsRibbon() {

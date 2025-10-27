@@ -166,9 +166,9 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
           <div className="rounded-2xl bg-white/80 p-5 text-sm text-[#425079]">
             <p className="font-semibold text-[#1c2b65]">작성 가이드</p>
             <ul className="mt-3 space-y-2">
-              <li>• 제목 앞에 [OUTAGE], [RELEASE] 등 태그를 붙이면 자동 분류됩니다.</li>
-              <li>• 관련 런북이나 Jira 링크를 본문에 첨부해주세요.</li>
-              <li>• 이미지 업로드는 추후 업데이트 예정입니다.</li>
+              <li>• 카테고리에 맞는 제목과 요약 키워드를 포함하면 검색이 쉬워집니다.</li>
+              <li>• 참고 링크나 추가 자료는 본문에 직접 첨부해주세요.</li>
+              <li>• 파일 업로드는 현재 이미지 한 개만 지원합니다.</li>
             </ul>
           </div>
         </div>
