@@ -8,6 +8,7 @@ import BoardListSkeleton from '@/components/boards/BoardListSkeleton';
 import ProtectedLink from '@/components/auth/ProtectedLink';
 import EmptyState from '@/components/ui/EmptyState';
 import { buttonClasses } from '@/components/ui/Button';
+import SeedBoardsButton from '@/components/boards/SeedBoardsButton';
 import { useBoardsQuery } from '@/lib/query/boards';
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 import { useAuthStore } from '@/store/auth';
@@ -50,14 +51,17 @@ export default function BoardGrid() {
         onReset={reset}
         isBusy={isFetching}
         actions={
-          <ProtectedLink
-            href="/boards/new"
-            nextPath="/boards/new"
-            reason="게시글 작성은 로그인한 사용자만 이용하실 수 있어요."
-            className={buttonClasses()}
-          >
-            새 글 작성
-          </ProtectedLink>
+          <div className="flex flex-wrap items-center gap-2">
+            <ProtectedLink
+              href="/boards/new"
+              nextPath="/boards/new"
+              reason="게시글 작성은 로그인한 사용자만 이용하실 수 있어요."
+              className={buttonClasses()}
+            >
+              새 글 작성
+            </ProtectedLink>
+            <SeedBoardsButton count={100} />
+          </div>
         }
       />
 
