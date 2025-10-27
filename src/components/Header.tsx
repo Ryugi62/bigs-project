@@ -15,7 +15,6 @@ type NavItem = { label: string; href: string };
 const NAV_ITEMS: NavItem[] = [
   { label: 'OpsHub', href: '/' },
   { label: '게시판', href: '/boards' },
-  { label: '새 글쓰기', href: '/boards/new' },
 ];
 
 const navItemBase =
@@ -119,7 +118,7 @@ export default function HeaderComponent() {
               aria-expanded={open}
               aria-label={open ? '모바일 메뉴 닫기' : '모바일 메뉴 열기'}
               onClick={() => setOpen((v) => !v)}
-              className="inline-flex h-11 w-11 items-center justify-center md:hidden"
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center md:hidden"
             >
               <span
                 aria-hidden="true"
@@ -180,7 +179,7 @@ export default function HeaderComponent() {
                     signOutMutation.mutate();
                     setOpen(false);
                   }}
-                  className="rounded-full border border-[#1c2b65] px-4 py-3 text-sm font-semibold text-[#1c2b65]"
+                  className="cursor-pointer rounded-full border border-[#1c2b65] px-4 py-3 text-sm font-semibold text-[#1c2b65]"
                   disabled={signOutMutation.isPending}
                 >
                   {signOutMutation.isPending ? '로그아웃 중…' : '로그아웃'}

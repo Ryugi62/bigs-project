@@ -180,7 +180,7 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-full px-5 py-3 text-sm font-semibold text-[#1c2b65] hover:underline"
+          className="cursor-pointer rounded-full px-5 py-3 text-sm font-semibold text-[#1c2b65] hover:underline"
         >
           취소
         </button>
