@@ -22,12 +22,15 @@ function handleGlobalRQError(err: unknown) {
     const message = err.message || '요청에 실패했습니다.';
     toast.push({ type: status >= 500 ? 'error' : 'warning', message });
     if (status === 401) {
-      // clear auth and redirect to signin
+      // clear auth and redirect to sign-in
       useAuthStore.getState().clear();
       if (typeof window !== 'undefined') {
         const current = window.location.pathname;
-        if (current !== '/signin') {
-          window.location.assign('/signin');
+        if (current !== '/sign-in') {
+          const params = new URLSearchParams();
+          params.set('next', `${window.location.pathname}${window.location.search}`);
+          params.set('reason', '세션이 만료되었습니다. 다시 로그인해주세요.');
+          window.location.assign(`/sign-in?${params.toString()}`);
         }
       }
     }

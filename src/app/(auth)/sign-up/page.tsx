@@ -3,22 +3,25 @@ import SignUpForm from '@/components/auth/SignUpForm';
 
 const highlights = [
   {
-    title: '역할 기반 접근 제어',
-    description: '권한 그룹을 설정해 민감한 정보를 안전하게 관리하세요.',
+    title: '본인 게시글 집중',
+    description: '토큰 검증을 통과한 내 게시글만 모아서 다른 사용자의 글과 섞이지 않아요.',
   },
   {
-    title: '릴리즈 캘린더',
-    description: '서비스별 배포 히스토리를 한 화면에서 비교하고 추적할 수 있습니다.',
+    title: '카테고리 기반 정리',
+    description: 'NOTICE, QNA, FREE, ETC 카테고리로 내가 남긴 게시글을 쉽게 정리합니다.',
   },
-  { title: '인사이트 위젯', description: '팀에 필요한 지표를 위젯으로 구성해 한눈에 확인하세요.' },
+  {
+    title: '빠른 수정 흐름',
+    description: 'React Query와 Zustand로 수정/삭제 후 목록이 바로 동기화됩니다.',
+  },
 ];
 
 export default function SignUpPage() {
   return (
     <>
       <AuthShowcase
-        title="OpsHub과 함께 더 나은 운영 문화를 구축하세요"
-        subtitle="계정을 만들고 각종 게시글과 런북을 손쉽게 공유해 팀의 응답성을 높이세요."
+        title="OpsHub Personal로 내 게시글을 정리하세요"
+        subtitle="계정을 생성해 내 게시글을 안전하게 관리하고, 필요한 글을 빠르게 찾아보세요."
         highlights={highlights}
       />
       <SignUpForm />

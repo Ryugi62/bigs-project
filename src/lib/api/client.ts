@@ -53,7 +53,7 @@ api.interceptors.response.use(
         }
         await refreshPromise;
         return api.request(cfg);
-      } catch (_) {
+      } catch {
         // fall through to reject original error
       }
     }

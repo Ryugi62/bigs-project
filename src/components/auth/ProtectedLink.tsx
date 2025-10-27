@@ -35,7 +35,7 @@ export default function ProtectedLink({
     const params = new URLSearchParams();
     const next = nextPath ?? href;
     params.set('next', next);
-    params.set('reason', encodeURIComponent(message));
+    params.set('reason', message);
     router.push(`/sign-in?${params.toString()}`);
   };
 

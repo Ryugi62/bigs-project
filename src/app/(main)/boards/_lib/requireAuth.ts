@@ -8,7 +8,7 @@ export async function requireAuth(nextPath: string, message?: string) {
   if (!token) {
     const params = new URLSearchParams();
     if (nextPath) params.set('next', nextPath);
-    params.set('reason', encodeURIComponent(message || DEFAULT_MESSAGE));
+    params.set('reason', message || DEFAULT_MESSAGE);
     redirect(`/sign-in?${params.toString()}`);
   }
   return token;

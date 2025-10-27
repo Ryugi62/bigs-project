@@ -1,11 +1,10 @@
-import { NextRequest } from 'next/server';
 import { decodeJwt, JwtPayload } from '@/lib/auth/jwt';
 import { upstream, HttpError, jsonError, jsonOk, setAuthCookies, ERROR_CODES } from '@/lib/http';
 import { getRefreshToken } from '@/lib/http/cookies';
 
 export const runtime = 'nodejs';
 
-export async function POST(_req: NextRequest) {
+export async function POST() {
   try {
     const refreshToken = await getRefreshToken();
     if (!refreshToken)

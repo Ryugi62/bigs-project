@@ -14,13 +14,13 @@ import { useToastStore } from '@/store/toast';
 const SIGN_UP_MOBILE_STEPS = [
   {
     title: '이름을 알려주세요',
-    description: 'OpsHub에서 보여질 이름입니다. 팀원들이 쉽게 알아볼 수 있게 입력하세요.',
+    description: '내 게시글 리스트에 표시될 이름입니다. 동료가 알아보기 쉽게 입력하세요.',
     label: '이름',
     placeholder: '홍길동',
   },
   {
     title: '회사 이메일을 입력하세요',
-    description: '회사 도메인 이메일로 가입하면 권한 연동이 간편해요.',
+    description: '본인 게시글만 식별하기 위해 회사 도메인 이메일을 사용합니다.',
     label: '이메일',
     placeholder: 'ops@bigs.im',
   },
@@ -191,9 +191,9 @@ export default function SignUpForm() {
       {/* Desktop / Tablet */}
       <div className="hidden w-full max-w-[460px] rounded-[32px] border border-white/15 bg-white/90 p-10 text-[#0f1f4b] shadow-[0_30px_120px_rgba(12,24,64,0.25)] md:block">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold">OpsHub 계정을 생성하세요</h2>
+          <h2 className="text-3xl font-bold">OpsHub Personal 계정을 생성하세요</h2>
           <p className="text-sm text-[#425079]">
-            운영 팀 구성원과 지식을 공유하기 위한 개인 계정을 만들어주세요.
+            본인이 작성한 게시글을 관리할 수 있도록 계정을 생성해주세요.
           </p>
         </div>
         <form className="mt-8 flex flex-col gap-6" onSubmit={handleSubmit}>
@@ -292,7 +292,7 @@ export default function SignUpForm() {
               {renderMobileStepField()}
               <div className="flex flex-col gap-2 pb-[calc(env(safe-area-inset-bottom,0)+4px)]">
                 <Button type="submit" disabled={signUp.isPending || signIn.isPending} fullWidth>
-                  {signUp.isPending ? '회원가입 중...' : 'OpsHub 시작하기'}
+                  {signUp.isPending ? '회원가입 중...' : 'OpsHub Personal 시작하기'}
                 </Button>
                 <Button type="button" variant="ghost" onClick={handleMobileBack} fullWidth>
                   이전으로

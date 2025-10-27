@@ -12,12 +12,12 @@ import { useToastStore } from '@/store/toast';
 
 const MOBILE_STEPS = [
   {
-    title: '회사 이메일로 시작해요',
-    description: 'OpsHub 계정으로 로그인하려면 회사 이메일을 입력해주세요.',
+    title: '회사 이메일을 입력하세요',
+    description: '내 게시글을 불러오기 위해 등록된 회사 이메일이 필요해요.',
   },
   {
-    title: '비밀번호를 입력하세요',
-    description: '등록된 비밀번호를 입력하고 보안을 위해 주변을 확인해주세요.',
+    title: '비밀번호로 인증하세요',
+    description: '안전한 접근을 위해 비밀번호를 입력하고 보안을 확인해주세요.',
   },
 ] as const;
 
@@ -79,7 +79,7 @@ export default function SignInForm({ notice }: SignInFormProps) {
         <div className="space-y-2">
           <h2 className="text-3xl font-bold">다시 만나 반가워요</h2>
           <p className="text-sm text-[#425079]">
-            사내 운영 대시보드 접속을 위해 계정으로 로그인하세요.
+            본인이 작성한 게시글을 관리하려면 계정으로 로그인해주세요.
           </p>
         </div>
         {notice && (
