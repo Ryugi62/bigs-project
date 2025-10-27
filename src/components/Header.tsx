@@ -171,7 +171,7 @@ export default function HeaderComponent() {
             ))}
             {user ? (
               <>
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#f0f4ff] px-4 py-3 text-sm font-semibold text-[#1c2b65]">
+                <span className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#1c2b65]">
                   {user.name || user.username}
                 </span>
                 <button
