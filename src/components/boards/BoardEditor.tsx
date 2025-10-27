@@ -199,7 +199,7 @@ function buildFormData(form: FormState) {
     content: form.content,
     category: form.boardCategory,
   };
-  data.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+  data.append('request', JSON.stringify(payload));
   if (form.attachment) {
     data.append('file', form.attachment);
   }
