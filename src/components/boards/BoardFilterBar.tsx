@@ -43,6 +43,15 @@ export default function BoardFilterBar({
     onKeywordChange(debouncedValue);
   }, [debouncedValue, keyword, onKeywordChange]);
 
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    } else {
+      onKeywordChange('');
+    }
+    setInputValue('');
+  };
+
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-[#dfe4f4] bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:p-6">
       <div
@@ -99,11 +108,11 @@ export default function BoardFilterBar({
             {onReset && (
               <button
                 type="button"
-                onClick={onReset}
+                onClick={handleReset}
                 className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
                 disabled={!hasActiveFilters}
               >
-                초기화
+                필터 초기화
               </button>
             )}
             {actions}

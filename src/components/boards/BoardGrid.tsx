@@ -169,7 +169,7 @@ export default function BoardGrid() {
                 disabled={isFetchingNextPage}
                 className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
               >
-                {isFetchingNextPage ? '더 불러오는 중...' : '더 불러오기'}
+                더 불러오는 중...
               </button>
               <div ref={loadMoreRef} className="h-1 w-full" aria-hidden />
             </div>
