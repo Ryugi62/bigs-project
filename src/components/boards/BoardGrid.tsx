@@ -106,15 +106,15 @@ export default function BoardGrid() {
           />
         )
       ) : (
-        <BoardList boards={boards} />
+        <BoardList boards={boards} isBusy={isFetching} />
       )}
     </section>
   );
 }
 
-function BoardList({ boards }: { boards: Board[] }) {
+function BoardList({ boards, isBusy }: { boards: Board[]; isBusy: boolean }) {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2" role="list" aria-busy={isBusy} aria-live="polite">
       {boards.map((board) => (
         <BoardCard key={board.id} board={board} />
       ))}

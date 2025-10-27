@@ -18,34 +18,37 @@ const insights = [
 
 export default function InsightBanner() {
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-white/40 bg-white/80 px-8 py-10 shadow-[0_30px_120px_rgba(15,32,88,0.12)]">
+    <section className="relative overflow-hidden rounded-3xl border border-[#dfe4f4] bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-10">
       <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(28,43,101,0.14),transparent_55%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(28,43,101,0.08),transparent_70%)]"
         aria-hidden="true"
       />
       <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-3 text-[#0b1a3a]">
-          <p className="text-sm font-semibold uppercase tracking-[0.4em] text-[#1c2b65]/60">
+        <div className="space-y-4 text-[#0b1a3a]">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#1c2b65]/70">
             Insights
           </p>
-          <h2 className="text-3xl font-bold leading-snug">
+          <h2 className="text-2xl font-bold leading-snug sm:text-3xl">
             운영팀이 가장 자주 찾는 정보, 자동으로 정리됩니다.
           </h2>
-          <p className="text-base text-[#425079]">
+          <p className="text-sm text-[#425079] sm:text-base">
             반복되는 업무를 줄이고 핵심에 집중하세요. 맞춤 추천과 정교한 필터로 원하는 정보를 빠르게
             찾을 수 있습니다.
           </p>
           <div className="flex flex-wrap gap-2 text-sm text-[#1c2b65]/70">
-            <span className="rounded-full bg-[#e4ecff] px-3 py-1 font-medium">태그 하이라이트</span>
-            <span className="rounded-full bg-[#e4ecff] px-3 py-1 font-medium">오픈 API 연동</span>
-            <span className="rounded-full bg-[#e4ecff] px-3 py-1 font-medium">접근성 준수</span>
+            <span className="rounded-full bg-[#eff2fb] px-3 py-1 font-medium">태그 하이라이트</span>
+            <span className="rounded-full bg-[#eff2fb] px-3 py-1 font-medium">오픈 API 연동</span>
+            <span className="rounded-full bg-[#eff2fb] px-3 py-1 font-medium">접근성 준수</span>
           </div>
         </div>
-        <div className="flex flex-1 flex-col gap-6 rounded-3xl border border-[#dfe6f6] bg-white/70 p-6">
+        <div className="flex flex-1 flex-col gap-6 rounded-2xl border border-[#e6ebf7] bg-[#f8f9fd] p-6">
           <ul className="space-y-4">
             {insights.map((item) => (
               <li key={item.title} className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1c2b65] text-xs font-bold text-white">
+                <span
+                  className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1c2b65] text-xs font-bold text-white"
+                  aria-hidden
+                >
                   •
                 </span>
                 <div>

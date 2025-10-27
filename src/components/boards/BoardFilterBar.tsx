@@ -7,7 +7,7 @@ import { buttonClasses } from '@/components/ui/Button';
 import type { ReactNode } from 'react';
 
 const tabBaseClass =
-  'rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c2b65] lg:px-5';
+  'cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c2b65] lg:px-5';
 
 type BoardFilterBarProps = {
   category: BoardCategoryFilter;
@@ -29,9 +29,9 @@ export default function BoardFilterBar({
   isBusy,
 }: BoardFilterBarProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl bg-white/80 p-6 shadow-[0_20px_64px_rgba(20,38,94,0.08)] lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex flex-col gap-4 rounded-3xl border border-[#dfe4f4] bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:p-6">
       <div
-        className="flex flex-1 flex-wrap items-center gap-2"
+        className="-mx-1 flex flex-1 flex-wrap items-center gap-2 overflow-x-auto pb-1"
         role="tablist"
         aria-label="게시판 카테고리"
       >
@@ -45,8 +45,8 @@ export default function BoardFilterBar({
             className={cx(
               tabBaseClass,
               category === tab.value
-                ? 'bg-[#1c2b65] text-white shadow-[0_12px_32px_rgba(10,24,68,0.25)]'
-                : 'border border-[#d9def0] bg-white text-[#1c2b65]/70 hover:bg-[#f5f7ff]',
+                ? 'bg-[#1c2b65] text-white shadow-sm'
+                : 'border border-[#d9def0] bg-white text-[#1c2b65]/80 hover:bg-[#f5f7ff]',
             )}
           >
             {tab.label}
@@ -61,6 +61,7 @@ export default function BoardFilterBar({
             value={keyword}
             onChange={(event) => onKeywordChange(event.target.value)}
             className="pr-12"
+            aria-label="게시글 검색"
           />
           <span className="pointer-events-none absolute right-4 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center text-[#1c2b65]/50">
             <svg
@@ -78,20 +79,10 @@ export default function BoardFilterBar({
             </svg>
           </span>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {onReset && (keyword || category !== 'ALL') && (
-            <button
-              type="button"
-              onClick={onReset}
-              className={buttonClasses({ variant: 'ghost', className: 'whitespace-nowrap' })}
-              disabled={isBusy}
-            >
-              초기화
-            </button>
-          )}
-          {actions}
-        </div>
       </div>
+      <span className="sr-only" aria-live="polite">
+        {isBusy ? '게시글을 불러오는 중입니다.' : '필터가 적용되었습니다.'}
+      </span>
     </div>
   );
 }
