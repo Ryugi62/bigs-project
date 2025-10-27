@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { cx } from '@/lib/cx';
 import { buttonClasses } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
+import type { ReactNode, KeyboardEvent } from 'react';
 
 const tabBaseClass =
   'cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c2b65] lg:px-5';
@@ -31,23 +30,29 @@ export default function BoardFilterBar({
   isBusy,
 }: BoardFilterBarProps) {
   const [inputValue, setInputValue] = useState(keyword);
-  const debouncedValue = useDebouncedValue(inputValue, 220);
   const hasActiveFilters = category !== 'ALL' || keyword.trim().length > 0;
 
   useEffect(() => {
     setInputValue(keyword);
   }, [keyword]);
 
-  useEffect(() => {
-    if (debouncedValue === keyword) return;
-    onKeywordChange(debouncedValue);
-  }, [debouncedValue, keyword, onKeywordChange]);
+  const applySearch = () => {
+    const nextKeyword = inputValue.trim();
+    if (nextKeyword === keyword.trim()) return;
+    onKeywordChange(nextKeyword);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      applySearch();
+    }
+  };
 
   const handleReset = () => {
+    onKeywordChange('');
     if (onReset) {
       onReset();
-    } else {
-      onKeywordChange('');
     }
     setInputValue('');
   };
@@ -84,10 +89,16 @@ export default function BoardFilterBar({
             placeholder="키워드로 검색"
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={handleKeyDown}
             className="pr-12"
             aria-label="게시글 검색"
           />
-          <span className="pointer-events-none absolute right-4 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center text-[#1c2b65]/50">
+          <button
+            type="button"
+            onClick={applySearch}
+            className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[#1c2b65]/60 transition hover:bg-[#f0f3ff] hover:text-[#1c2b65] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c2b65]"
+            aria-label="검색 실행"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -101,7 +112,7 @@ export default function BoardFilterBar({
                 clipRule="evenodd"
               />
             </svg>
-          </span>
+          </button>
         </div>
         {(onReset || actions) && (
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
