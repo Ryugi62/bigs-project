@@ -18,6 +18,7 @@ export type BoardsQueryOptions = BoardsFilters & {
 type FetchBoardsOptions = BoardsFilters & {
   page: number;
   size: number;
+  sort?: string;
 };
 
 export type BoardsPage = {
@@ -70,8 +71,10 @@ async function fetchBoardsPage({
   size,
   keyword,
   category,
+  sort,
 }: FetchBoardsOptions): Promise<BoardsPage> {
   const params: Record<string, unknown> = { page, size };
+  params.sort = sort ?? 'createdAt,DESC';
   if (keyword) {
     params.keyword = keyword;
     params.search = keyword;
