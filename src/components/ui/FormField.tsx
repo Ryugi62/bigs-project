@@ -23,17 +23,15 @@ export default function FormField({
 }: FormFieldProps) {
   const message = error ?? hint;
   const messageId = message ? `${htmlFor}-${error ? 'error' : 'hint'}` : undefined;
-  const childWithAccessibility = isValidElement(children)
-    ? cloneElement(children, {
-        ...(messageId && !children.props['aria-describedby']
-          ? { 'aria-describedby': messageId }
-          : {}),
-        ...(error && children.props['aria-invalid'] === undefined ? { 'aria-invalid': true } : {}),
-        ...(error && 'hasError' in (children.props as Record<string, unknown>)
-          ? { hasError: true }
-          : {}),
-      })
-    : children;
+  let childWithAccessibility = children;
+  if (isValidElement(children)) {
+    const childProps = children.props as Record<string, unknown>;
+    childWithAccessibility = cloneElement(children, {
+      ...(messageId && !childProps['aria-describedby'] ? { 'aria-describedby': messageId } : {}),
+      ...(error && childProps['aria-invalid'] === undefined ? { 'aria-invalid': true } : {}),
+      ...(error && 'hasError' in childProps ? { hasError: true } : {}),
+    });
+  }
 
   return (
     <div className={cx('flex flex-col gap-2', className)}>

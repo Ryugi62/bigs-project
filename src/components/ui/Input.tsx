@@ -13,7 +13,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, hasError, ...props }, ref) => {
     const ariaInvalid = props['aria-invalid'];
     const invalid =
-      Boolean(hasError) || ariaInvalid === true || ariaInvalid === 'true' || ariaInvalid === '';
+      Boolean(hasError) ||
+      ariaInvalid === true ||
+      ariaInvalid === 'true' ||
+      ariaInvalid === 'grammar' ||
+      ariaInvalid === 'spelling';
 
     return (
       <input
