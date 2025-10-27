@@ -4,12 +4,12 @@ import { requireAuth } from '@/app/(main)/boards/_lib/requireAuth';
 
 type BoardEditParams = { id: string };
 
-export default async function BoardEditPage({
-  params,
-}: {
-  params: BoardEditParams | Promise<BoardEditParams>;
-}) {
-  const resolved = params instanceof Promise ? await params : params;
+type BoardEditPageProps = {
+  params: Promise<BoardEditParams>;
+};
+
+export default async function BoardEditPage({ params }: BoardEditPageProps) {
+  const resolved = await params;
   const boardIdParam = resolved.id;
   await requireAuth(`/boards/${boardIdParam}/edit`, '게시글 수정은 로그인한 사용자만 가능합니다.');
   const board = await getBoardDetail(boardIdParam);

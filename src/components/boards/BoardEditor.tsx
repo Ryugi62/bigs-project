@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import FormField from '@/components/ui/FormField';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import { ClientError, patch, post } from '@/lib/http/client';
 import { createBoardFormData } from '@/lib/api/boards';
@@ -13,7 +14,6 @@ import { extractErrorMessage } from '@/lib/http/error-message';
 import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 import type { BoardCategory } from '@/types/boards';
 import { useToastStore } from '@/store/toast';
-import RichTextEditor from '@/components/ui/RichTextEditor';
 
 const categories: Array<{ value: BoardCategory; label: string }> = (
   Object.entries(BOARD_CATEGORY_LABELS) as Array<[BoardCategory, string]>
@@ -35,15 +35,6 @@ type FormState = {
   boardCategory: BoardCategory;
   attachment: File | null;
 };
-
-function isQuillContentEmpty(value: string) {
-  if (!value) return true;
-  const withoutTags = value
-    .replace(/<(.|\n)*?>/g, '')
-    .replace(/&nbsp;/g, '')
-    .trim();
-  return withoutTags.length === 0;
-}
 
 export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps) {
   const [form, setForm] = useState<FormState>({
@@ -86,12 +77,20 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
-    if (!form.title || isQuillContentEmpty(form.content)) {
+    const trimmedContent = form.content.trim();
+    if (!form.title || trimmedContent.length === 0) {
       setError('제목과 내용을 입력해주세요.');
       return;
     }
+    const MAX_CONTENT_LENGTH = 1200;
+    if (trimmedContent.length > MAX_CONTENT_LENGTH) {
+      const message = `본문은 최대 ${MAX_CONTENT_LENGTH}자까지 입력할 수 있습니다.`;
+      setError(message);
+      pushToast({ type: 'warning', message });
+      return;
+    }
     try {
-      await mutation.mutateAsync(form);
+      await mutation.mutateAsync({ ...form, content: trimmedContent });
     } catch (err) {
       if (err instanceof ClientError) {
         const message = extractErrorMessage(err.details) ?? err.message;
@@ -132,14 +131,15 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
             label="내용"
             htmlFor="board-content"
             required
-            hint="서식을 활용해 본문을 작성하고 링크, 코드 블록을 손쉽게 추가할 수 있습니다."
+            hint="간단한 본문을 입력하고 줄바꿈으로 문단을 나눌 수 있습니다."
           >
-            <RichTextEditor
+            <Textarea
               id="board-content"
               value={form.content}
-              onChange={(content) => setForm((prev) => ({ ...prev, content }))}
+              onChange={(event) => setForm((prev) => ({ ...prev, content: event.target.value }))}
               placeholder="본문 내용을 입력하세요."
-              className="overflow-hidden rounded-3xl"
+              maxLength={1200}
+              className="min-h-[240px]"
             />
           </FormField>
         </div>
@@ -190,7 +190,9 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
         </div>
       </div>
       {error && (
-        <p className="rounded-2xl bg-[#ffe5e8] px-4 py-3 text-sm text-[#d12d3e]">{error}</p>
+        <p className="rounded-2xl bg-[#ffe5e8] wrap-break-word px-4 py-3 text-sm text-[#d12d3e]">
+          {error}
+        </p>
       )}
       <div className="flex flex-wrap justify-end gap-3">
         <button

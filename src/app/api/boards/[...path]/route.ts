@@ -3,34 +3,29 @@ import { handleBoardsNoBody, handleBoardsWithBody } from '../_proxy';
 
 type RouteParams = { path?: string[] };
 
-async function resolveParams(raw: RouteParams | Promise<RouteParams>): Promise<RouteParams> {
-  return raw instanceof Promise ? await raw : raw;
-}
+type RouteContext = { params: Promise<RouteParams> };
 
-export async function GET(req: NextRequest, ctx: { params: RouteParams | Promise<RouteParams> }) {
-  const { path = [] } = await resolveParams(ctx.params);
+export async function GET(req: NextRequest, ctx: RouteContext) {
+  const { path = [] } = await ctx.params;
   return handleBoardsNoBody('GET', req, path);
 }
 
-export async function POST(req: NextRequest, ctx: { params: RouteParams | Promise<RouteParams> }) {
-  const { path = [] } = await resolveParams(ctx.params);
+export async function POST(req: NextRequest, ctx: RouteContext) {
+  const { path = [] } = await ctx.params;
   return handleBoardsWithBody('POST', req, path);
 }
 
-export async function PUT(req: NextRequest, ctx: { params: RouteParams | Promise<RouteParams> }) {
-  const { path = [] } = await resolveParams(ctx.params);
+export async function PUT(req: NextRequest, ctx: RouteContext) {
+  const { path = [] } = await ctx.params;
   return handleBoardsWithBody('PUT', req, path);
 }
 
-export async function PATCH(req: NextRequest, ctx: { params: RouteParams | Promise<RouteParams> }) {
-  const { path = [] } = await resolveParams(ctx.params);
+export async function PATCH(req: NextRequest, ctx: RouteContext) {
+  const { path = [] } = await ctx.params;
   return handleBoardsWithBody('PATCH', req, path);
 }
 
-export async function DELETE(
-  req: NextRequest,
-  ctx: { params: RouteParams | Promise<RouteParams> },
-) {
-  const { path = [] } = await resolveParams(ctx.params);
+export async function DELETE(req: NextRequest, ctx: RouteContext) {
+  const { path = [] } = await ctx.params;
   return handleBoardsNoBody('DELETE', req, path);
 }

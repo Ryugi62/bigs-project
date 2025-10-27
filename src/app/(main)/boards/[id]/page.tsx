@@ -14,12 +14,12 @@ const formatter = new Intl.DateTimeFormat('ko-KR', {
 
 type BoardDetailParams = { id: string };
 
-export default async function BoardDetailPage({
-  params,
-}: {
-  params: BoardDetailParams | Promise<BoardDetailParams>;
-}) {
-  const resolved = params instanceof Promise ? await params : params;
+type BoardDetailPageProps = {
+  params: Promise<BoardDetailParams>;
+};
+
+export default async function BoardDetailPage({ params }: BoardDetailPageProps) {
+  const resolved = await params;
   const boardId = resolved.id;
   await requireAuth(`/boards/${boardId}`, '게시글 조회는 로그인한 사용자만 이용할 수 있어요.');
   const board = await getBoardDetail(boardId);
@@ -56,8 +56,8 @@ export default async function BoardDetailPage({
         </div>
       )}
 
-      <div className="prose max-w-none text-[#1c2b65] prose-headings:font-bold prose-headings:text-[#0f1f4b] prose-a:text-[#1c2b65] prose-strong:text-[#0f1f4b] prose-code:rounded-md prose-code:bg-[#f6f7fb] prose-code:px-1.5 prose-code:py-1">
-        <div dangerouslySetInnerHTML={{ __html: board.content }} />
+      <div className="max-h-[70vh] overflow-y-auto pr-1 text-base leading-relaxed text-[#1c2b65] whitespace-pre-line break-words sm:max-h-[720px]">
+        {board.content || '작성된 본문이 없습니다.'}
       </div>
 
       <footer className="flex flex-col gap-4 border-t border-[#e2e8f5] pt-6 text-sm text-[#425079] sm:flex-row sm:items-center sm:justify-between">
