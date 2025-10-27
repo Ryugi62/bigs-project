@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import { ClientError, patch, post } from '@/lib/http/client';
+import { createBoardFormData } from '@/lib/api/boards';
 import { extractErrorMessage } from '@/lib/http/error-message';
 import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 import type { BoardCategory } from '@/types/boards';
@@ -51,7 +52,12 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
   const mutation = useMutation({
     mutationKey: ['boards', mode, boardId],
     mutationFn: async (payload: FormState) => {
-      const body = buildFormData(payload);
+      const body = createBoardFormData({
+        title: payload.title,
+        content: payload.content,
+        category: payload.boardCategory,
+        attachment: payload.attachment,
+      });
       if (mode === 'edit' && boardId) {
         await patch(`/boards/${boardId}`, body);
         return;
@@ -190,23 +196,4 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
       </div>
     </form>
   );
-}
-
-function buildFormData(form: FormState) {
-  const data = new FormData();
-  const payload = {
-    title: form.title,
-    content: form.content,
-    category: form.boardCategory,
-  };
-  data.append(
-    'request',
-    new Blob([JSON.stringify(payload)], {
-      type: 'application/json',
-    }),
-  );
-  if (form.attachment) {
-    data.append('file', form.attachment);
-  }
-  return data;
 }
