@@ -11,18 +11,15 @@ import { buttonClasses } from '@/components/ui/Button';
 import { useBoardsQuery } from '@/lib/query/boards';
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 import { useAuthStore } from '@/store/auth';
-import {
-  selectBoardCategory,
-  selectBoardFilterActions,
-  selectBoardKeyword,
-  useBoardFilterStore,
-} from '@/store/boardFilters';
+import { selectBoardCategory, selectBoardKeyword, useBoardFilterStore } from '@/store/boardFilters';
 import type { Board } from '@/types/boards';
 
 export default function BoardGrid() {
   const category = useBoardFilterStore(selectBoardCategory);
   const keyword = useBoardFilterStore(selectBoardKeyword);
-  const { setCategory, setKeyword, reset } = useBoardFilterStore(selectBoardFilterActions);
+  const setCategory = useBoardFilterStore((state) => state.setCategory);
+  const setKeyword = useBoardFilterStore((state) => state.setKeyword);
+  const reset = useBoardFilterStore((state) => state.reset);
   const debouncedKeyword = useDebouncedValue(keyword, 250);
   const isAuthenticated = useAuthStore((state) => Boolean(state.user));
 

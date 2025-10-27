@@ -25,8 +25,3 @@ export const useBoardFilterStore = create<BoardFilterState>((set) => ({
 
 export const selectBoardCategory = (state: BoardFilterState) => state.category;
 export const selectBoardKeyword = (state: BoardFilterState) => state.keyword;
-export const selectBoardFilterActions = (state: BoardFilterState) => ({
-  setCategory: state.setCategory,
-  setKeyword: state.setKeyword,
-  reset: state.reset,
-});
