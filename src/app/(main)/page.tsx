@@ -7,7 +7,7 @@ import type { BoardListResponse } from '@/types/boards';
 import { getAccessToken } from '@/lib/http/cookies';
 import { upstream } from '@/lib/http/upstream';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import { mapListToBoards } from '@/lib/query/boards';
+import { mapListToBoards, boardsQueryKey } from '@/lib/query/boards';
 import { HttpError } from '@/lib/http/upstream';
 
 async function getInitialBoards(): Promise<Board[]> {
@@ -40,7 +40,7 @@ async function getInitialBoards(): Promise<Board[]> {
 export default async function HomePage() {
   const queryClient = new QueryClient();
   const boards = await getInitialBoards();
-  await queryClient.prefetchQuery({ queryKey: ['boards', {}], queryFn: async () => boards });
+  queryClient.setQueryData(boardsQueryKey(), boards);
   const state = dehydrate(queryClient);
 
   return (

@@ -11,6 +11,7 @@ export type Board = {
     id: string;
     name: string;
   };
+  preview?: string;
 };
 
 export type BoardListResponse = {
@@ -19,6 +20,14 @@ export type BoardListResponse = {
     title: string;
     category: BoardCategory;
     createdAt: string;
+    content?: string;
+    summary?: string;
+    snippet?: string;
+    preview?: string;
+    author?: {
+      id?: number | string;
+      name?: string;
+    };
   }>;
   totalElements: number;
   totalPages: number;
