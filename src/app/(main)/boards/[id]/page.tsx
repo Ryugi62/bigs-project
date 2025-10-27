@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import CategoryBadge from '@/components/ui/CategoryBadge';
-import { buttonClasses } from '@/components/ui/Button';
 import { getBoardDetail } from '@/app/(main)/boards/_lib/getBoardDetail';
-import ProtectedLink from '@/components/auth/ProtectedLink';
+import { requireAuth } from '@/app/(main)/boards/_lib/requireAuth';
+import BoardActions from '@/components/boards/BoardActions';
 
 const formatter = new Intl.DateTimeFormat('ko-KR', {
   year: 'numeric',
@@ -12,8 +12,17 @@ const formatter = new Intl.DateTimeFormat('ko-KR', {
   minute: '2-digit',
 });
 
-export default async function BoardDetailPage({ params }: { params: { id: string } }) {
-  const board = await getBoardDetail(params.id);
+type BoardDetailParams = { id: string };
+
+export default async function BoardDetailPage({
+  params,
+}: {
+  params: BoardDetailParams | Promise<BoardDetailParams>;
+}) {
+  const resolved = params instanceof Promise ? await params : params;
+  const boardId = resolved.id;
+  await requireAuth(`/boards/${boardId}`, '게시글 조회는 로그인한 사용자만 이용할 수 있어요.');
+  const board = await getBoardDetail(boardId);
 
   return (
     <article className="mx-auto flex w-full max-w-4xl flex-col gap-10 rounded-[32px] border border-white/50 bg-white/95 p-10 shadow-[0_40px_140px_rgba(15,32,88,0.18)]">
@@ -55,19 +64,7 @@ export default async function BoardDetailPage({ params }: { params: { id: string
         <Link href="/boards" className="text-[#1c2b65] hover:underline">
           목록으로 돌아가기
         </Link>
-        <div className="flex flex-wrap gap-3">
-          <ProtectedLink
-            href={`/boards/${board.id}/edit`}
-            nextPath={`/boards/${board.id}/edit`}
-            reason="게시글 수정은 로그인한 사용자만 이용하실 수 있어요."
-            className={buttonClasses({ variant: 'secondary' })}
-          >
-            글 수정
-          </ProtectedLink>
-          <button type="button" className={buttonClasses({ variant: 'ghost' })}>
-            삭제 요청
-          </button>
-        </div>
+        <BoardActions boardId={board.id} />
       </footer>
     </article>
   );

@@ -2,13 +2,21 @@ import BoardEditor from '@/components/boards/BoardEditor';
 import { getBoardDetail } from '@/app/(main)/boards/_lib/getBoardDetail';
 import { requireAuth } from '@/app/(main)/boards/_lib/requireAuth';
 
-export default async function BoardEditPage({ params }: { params: { id: string } }) {
-  await requireAuth(`/boards/${params.id}/edit`, '게시글 수정은 로그인한 사용자만 가능합니다.');
-  const board = await getBoardDetail(params.id);
+type BoardEditParams = { id: string };
+
+export default async function BoardEditPage({
+  params,
+}: {
+  params: BoardEditParams | Promise<BoardEditParams>;
+}) {
+  const resolved = params instanceof Promise ? await params : params;
+  const boardIdParam = resolved.id;
+  await requireAuth(`/boards/${boardIdParam}/edit`, '게시글 수정은 로그인한 사용자만 가능합니다.');
+  const board = await getBoardDetail(boardIdParam);
   return (
     <BoardEditor
       mode="edit"
-      boardId={Number.parseInt(params.id, 10)}
+      boardId={Number.parseInt(boardIdParam, 10)}
       initial={{
         title: board.title,
         content: board.content,
