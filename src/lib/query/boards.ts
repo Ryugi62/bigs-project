@@ -1,19 +1,31 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { ClientError, get } from '@/lib/http/client';
 import { BOARD_PAGE_SIZE } from '@/config/boards';
 import type { Board, BoardCategory, BoardListResponse } from '@/types/boards';
 
-export type BoardsQueryOptions = {
-  page?: number;
-  size?: number;
+const UNKNOWN_AUTHOR_FALLBACK = '알 수 없는 작성자';
+
+export type BoardsFilters = {
   keyword?: string;
   category?: BoardCategory;
+};
+
+export type BoardsQueryOptions = BoardsFilters & {
+  size?: number;
   enabled?: boolean;
 };
 
-type RequestOptions = Omit<BoardsQueryOptions, 'enabled'>;
+type FetchBoardsOptions = BoardsFilters & {
+  page: number;
+  size: number;
+};
 
-const UNKNOWN_AUTHOR_FALLBACK = '알 수 없는 작성자';
+export type BoardsPage = {
+  items: Board[];
+  page: number;
+  hasMore: boolean;
+  totalElements: number;
+};
 
 export const mapListToBoards = (payload: BoardListResponse): Board[] =>
   payload.content.map((item) => {
@@ -42,36 +54,70 @@ export const mapListToBoards = (payload: BoardListResponse): Board[] =>
     } satisfies Board;
   });
 
-async function getBoards({
-  page = 0,
-  size = BOARD_PAGE_SIZE,
+function normalizeFilters(filters: BoardsFilters): BoardsFilters {
+  const normalized: BoardsFilters = {};
+  if (filters.keyword && filters.keyword.trim().length > 0) {
+    normalized.keyword = filters.keyword.trim();
+  }
+  if (filters.category) {
+    normalized.category = filters.category;
+  }
+  return normalized;
+}
+
+async function fetchBoardsPage({
+  page,
+  size,
   keyword,
   category,
-}: RequestOptions = {}): Promise<Board[]> {
+}: FetchBoardsOptions): Promise<BoardsPage> {
   const params: Record<string, unknown> = { page, size };
   if (keyword) params.keyword = keyword;
   if (category) params.category = category;
+
   try {
     const response = await get<BoardListResponse>('/boards', params);
-    return mapListToBoards(response);
+    return {
+      items: mapListToBoards(response),
+      page,
+      hasMore: !response.last,
+      totalElements: response.totalElements,
+    } satisfies BoardsPage;
   } catch (error) {
     if (error instanceof ClientError && (error.status === 401 || error.status === 403)) {
-      return [];
+      return {
+        items: [],
+        page,
+        hasMore: false,
+        totalElements: 0,
+      } satisfies BoardsPage;
     }
     throw error;
   }
 }
 
-export const boardsQueryKey = (options: RequestOptions = {}) => ['boards', options] as const;
+export const boardsInfiniteQueryKey = (filters: BoardsFilters = {}) =>
+  ['boards', 'infinite', filters] as const;
 
-export function useBoardsQuery(options: BoardsQueryOptions = {}) {
-  const { enabled = true, ...requestOptions } = options;
-  return useQuery({
-    queryKey: boardsQueryKey(requestOptions),
-    queryFn: () => getBoards(requestOptions),
+export function useInfiniteBoardsQuery(options: BoardsQueryOptions = {}) {
+  const { enabled = true, size = BOARD_PAGE_SIZE, ...rawFilters } = options;
+  const filters = normalizeFilters(rawFilters);
+
+  return useInfiniteQuery({
+    queryKey: boardsInfiniteQueryKey(filters),
+    initialPageParam: 0,
     enabled,
+    queryFn: ({ pageParam }) =>
+      fetchBoardsPage({
+        page: pageParam,
+        size,
+        keyword: filters.keyword,
+        category: filters.category,
+      }),
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
     staleTime: 30_000,
     gcTime: 300_000,
-    placeholderData: keepPreviousData,
   });
 }
+
+export { fetchBoardsPage };

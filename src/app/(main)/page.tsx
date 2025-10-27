@@ -2,36 +2,66 @@ import PageHero from '@/components/layout/PageHero';
 import BoardGrid from '@/components/boards/BoardGrid';
 import InsightBanner from '@/components/boards/InsightBanner';
 import TrendsRibbon from '@/components/boards/TrendsRibbon';
-import type { Board } from '@/types/boards';
 import type { BoardListResponse } from '@/types/boards';
 import { getAccessToken } from '@/lib/http/cookies';
 import { upstream } from '@/lib/http/upstream';
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import { mapListToBoards, boardsQueryKey } from '@/lib/query/boards';
+import type { InfiniteData } from '@tanstack/react-query';
+import { BOARD_PAGE_SIZE } from '@/config/boards';
+import { mapListToBoards, boardsInfiniteQueryKey, type BoardsPage } from '@/lib/query/boards';
 import { HttpError } from '@/lib/http/upstream';
 
-async function getInitialBoards(): Promise<Board[]> {
+async function getInitialBoards(): Promise<BoardsPage> {
   try {
     const token = await getAccessToken();
     if (!token) {
-      return [];
+      return {
+        items: [],
+        page: 0,
+        hasMore: false,
+        totalElements: 0,
+      };
     }
-    const { data } = await upstream<BoardListResponse>('GET', '/boards?page=0&size=10', { token });
-    return mapListToBoards(data);
+    const { data } = await upstream<BoardListResponse>(
+      'GET',
+      `/boards?page=0&size=${BOARD_PAGE_SIZE}`,
+      { token },
+    );
+    return {
+      items: mapListToBoards(data),
+      page: 0,
+      hasMore: !data.last,
+      totalElements: data.totalElements,
+    } satisfies BoardsPage;
   } catch (error) {
     if (error instanceof HttpError) {
       if (error.status === 401 || error.status === 403) {
-        return [];
+        return {
+          items: [],
+          page: 0,
+          hasMore: false,
+          totalElements: 0,
+        };
       }
       console.error('Failed to prefetch boards', error.status, error.message);
-      return [];
+      return {
+        items: [],
+        page: 0,
+        hasMore: false,
+        totalElements: 0,
+      };
     }
     if (
       error instanceof Error &&
       (error.message.includes('ENOTFOUND') || error.message.includes('getaddrinfo'))
     ) {
       console.warn('Skipping board prefetch: upstream host unreachable.');
-      return [];
+      return {
+        items: [],
+        page: 0,
+        hasMore: false,
+        totalElements: 0,
+      };
     }
     throw error;
   }
@@ -39,8 +69,12 @@ async function getInitialBoards(): Promise<Board[]> {
 
 export default async function HomePage() {
   const queryClient = new QueryClient();
-  const boards = await getInitialBoards();
-  queryClient.setQueryData(boardsQueryKey(), boards);
+  const boardsPage = await getInitialBoards();
+  const initialData: InfiniteData<BoardsPage> = {
+    pages: [boardsPage],
+    pageParams: [0],
+  };
+  queryClient.setQueryData(boardsInfiniteQueryKey({}), initialData);
   const state = dehydrate(queryClient);
 
   return (

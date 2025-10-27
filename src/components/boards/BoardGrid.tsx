@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import BoardCard from '@/components/boards/BoardCard';
 import BoardFilterBar from '@/components/boards/BoardFilterBar';
 import BoardListSkeleton from '@/components/boards/BoardListSkeleton';
@@ -9,7 +9,7 @@ import ProtectedLink from '@/components/auth/ProtectedLink';
 import EmptyState from '@/components/ui/EmptyState';
 import { buttonClasses } from '@/components/ui/Button';
 import SeedBoardsButton from '@/components/boards/SeedBoardsButton';
-import { useBoardsQuery } from '@/lib/query/boards';
+import { useInfiniteBoardsQuery } from '@/lib/query/boards';
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 import { useAuthStore } from '@/store/auth';
 import { selectBoardCategory, selectBoardKeyword, useBoardFilterStore } from '@/store/boardFilters';
@@ -32,12 +32,44 @@ export default function BoardGrid() {
     [debouncedKeyword, category],
   );
 
-  const { data, error, isPending, isFetching, refetch } = useBoardsQuery(queryOptions);
+  const {
+    data,
+    error,
+    isPending,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteBoardsQuery(queryOptions);
 
-  const boards = data ?? [];
+  const boards = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
+
   const showSkeleton = isPending && boards.length === 0;
   const showEmpty = !isPending && !error && boards.length === 0;
-  const busyLabel = isFetching && boards.length > 0;
+  const busyLabel = isFetching && !isFetchingNextPage && boards.length > 0;
+  const listBusy = isFetching || isFetchingNextPage;
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, boards.length]);
 
   const errorMessage = resolveErrorMessage(error);
 
@@ -110,7 +142,22 @@ export default function BoardGrid() {
           />
         )
       ) : (
-        <BoardList boards={boards} isBusy={isFetching} />
+        <>
+          <BoardList boards={boards} isBusy={listBusy} />
+          {hasNextPage && (
+            <div className="flex flex-col items-center gap-4 pt-4">
+              <button
+                type="button"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
+              >
+                {isFetchingNextPage ? '더 불러오는 중...' : '더 불러오기'}
+              </button>
+              <div ref={loadMoreRef} className="h-1 w-full" aria-hidden />
+            </div>
+          )}
+        </>
       )}
     </section>
   );
