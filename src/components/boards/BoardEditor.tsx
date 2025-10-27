@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
-import { ClientError, post, put } from '@/lib/http/client';
+import { ClientError, patch, post } from '@/lib/http/client';
 import { extractErrorMessage } from '@/lib/http/error-message';
 import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 import type { BoardCategory } from '@/types/boards';
@@ -32,16 +32,17 @@ type FormState = {
   title: string;
   content: string;
   boardCategory: BoardCategory;
+  attachment: File | null;
 };
 
 export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps) {
-  const [form, setForm] = useState<FormState>(
-    initial ?? {
-      title: '',
-      content: '',
-      boardCategory: 'NOTICE',
-    },
-  );
+  const [form, setForm] = useState<FormState>({
+    title: initial?.title ?? '',
+    content: initial?.content ?? '',
+    boardCategory: initial?.boardCategory ?? 'NOTICE',
+    attachment: null,
+  });
+  const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const qc = useQueryClient();
@@ -52,7 +53,7 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
     mutationFn: async (payload: FormState) => {
       const body = buildFormData(payload);
       if (mode === 'edit' && boardId) {
-        await put(`/boards/${boardId}`, body);
+        await patch(`/boards/${boardId}`, body);
         return;
       }
       await post('/boards', body);
@@ -142,6 +143,26 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
               ))}
             </Select>
           </FormField>
+          <FormField
+            label="첨부 파일"
+            htmlFor="board-attachment"
+            hint={
+              attachmentName
+                ? `선택된 파일: ${attachmentName}`
+                : '필요 시 관련 이미지를 첨부할 수 있습니다.'
+            }
+          >
+            <Input
+              id="board-attachment"
+              type="file"
+              accept="image/*"
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                setForm((prev) => ({ ...prev, attachment: file }));
+                setAttachmentName(file ? file.name : null);
+              }}
+            />
+          </FormField>
           <div className="rounded-2xl bg-white/80 p-5 text-sm text-[#425079]">
             <p className="font-semibold text-[#1c2b65]">작성 가이드</p>
             <ul className="mt-3 space-y-2">
@@ -173,8 +194,14 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
 
 function buildFormData(form: FormState) {
   const data = new FormData();
-  data.append('title', form.title);
-  data.append('content', form.content);
-  data.append('boardCategory', form.boardCategory);
+  const payload = {
+    title: form.title,
+    content: form.content,
+    category: form.boardCategory,
+  };
+  data.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+  if (form.attachment) {
+    data.append('file', form.attachment);
+  }
   return data;
 }
