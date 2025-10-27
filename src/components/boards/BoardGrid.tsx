@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BoardCard from '@/components/boards/BoardCard';
 import BoardFilterBar from '@/components/boards/BoardFilterBar';
 import BoardListSkeleton from '@/components/boards/BoardListSkeleton';
@@ -55,11 +55,27 @@ export default function BoardGrid() {
     [boards, category, normalizedKeyword],
   );
 
-  const isRefreshing = !isPending && isFetching && !isFetchingNextPage;
-  const showSkeleton = isPending && boards.length === 0;
+  const [fallbackBoards, setFallbackBoards] = useState<Board[]>([]);
+  useEffect(() => {
+    if (filteredBoards.length === 0) return;
+    queueMicrotask(() => {
+      setFallbackBoards(filteredBoards);
+    });
+  }, [filteredBoards]);
+
+  const useFallbackBoards =
+    (isPending || (isFetching && !isFetchingNextPage)) &&
+    filteredBoards.length === 0 &&
+    fallbackBoards.length > 0;
+  const boardsToRender = useFallbackBoards ? fallbackBoards : filteredBoards;
+
+  const hasRenderedBoards = boardsToRender.length > 0;
+  const isFiltering = useFallbackBoards;
+  const isRefreshing = !isPending && isFetching && !isFetchingNextPage && hasRenderedBoards;
+  const showSkeleton = !hasRenderedBoards && isPending;
   const showEmpty =
     !isPending && !isFetching && !isFetchingNextPage && !error && filteredBoards.length === 0;
-  const listBusy = isFetching || isFetchingNextPage;
+  const listBusy = isFetching || isFetchingNextPage || isFiltering;
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -138,7 +154,7 @@ export default function BoardGrid() {
             description="검색어나 카테고리를 변경하거나 필터를 초기화해주세요."
             action={
               <button type="button" onClick={reset} className={buttonClasses({ variant: 'ghost' })}>
-                초기화
+                필터 초기화
               </button>
             }
           />
@@ -156,9 +172,9 @@ export default function BoardGrid() {
       ) : (
         <>
           <BoardList
-            boards={filteredBoards}
+            boards={boardsToRender}
             isBusy={listBusy}
-            isRefreshing={isRefreshing}
+            isFiltering={isFiltering || isRefreshing}
             showLoadingPlaceholders={isFetchingNextPage}
           />
           {hasNextPage && (
@@ -169,7 +185,7 @@ export default function BoardGrid() {
                 disabled={isFetchingNextPage}
                 className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
               >
-                더 불러오는 중...
+                {isFetchingNextPage ? '더 불러오는 중...' : '더 불러오기'}
               </button>
               <div ref={loadMoreRef} className="h-1 w-full" aria-hidden />
             </div>
@@ -183,19 +199,19 @@ export default function BoardGrid() {
 function BoardList({
   boards,
   isBusy,
-  isRefreshing,
+  isFiltering,
   showLoadingPlaceholders,
 }: {
   boards: Board[];
   isBusy: boolean;
-  isRefreshing: boolean;
+  isFiltering: boolean;
   showLoadingPlaceholders: boolean;
 }) {
   return (
     <div
       className={cx(
         'grid gap-6 sm:grid-cols-2 transition-opacity duration-200',
-        isRefreshing ? 'opacity-60 pointer-events-none' : 'opacity-100',
+        isFiltering ? 'opacity-60 pointer-events-none' : 'opacity-100',
       )}
       role="list"
       aria-busy={isBusy}
