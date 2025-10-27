@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Bigs | OpsHub',
+  title: 'Bigs | OpsHub Personal',
   description:
-    '공지·Q&A·가이드 통합. 카테고리/태그 필터, 이미지 미리보기, 에러/로딩 처리까지 갖춘 경량 포털.',
+    '로그인한 사용자의 게시글만 안전하게 불러와 카테고리와 검색으로 관리하는 개인 운영 게시판.',
 };
 
 export default function RootLayout({
