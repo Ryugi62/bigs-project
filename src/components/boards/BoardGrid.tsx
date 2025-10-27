@@ -10,10 +10,11 @@ import EmptyState from '@/components/ui/EmptyState';
 import { buttonClasses } from '@/components/ui/Button';
 import SeedBoardsButton from '@/components/boards/SeedBoardsButton';
 import { useInfiniteBoardsQuery } from '@/lib/query/boards';
-import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 import { useAuthStore } from '@/store/auth';
 import { selectBoardCategory, selectBoardKeyword, useBoardFilterStore } from '@/store/boardFilters';
 import type { Board } from '@/types/boards';
+import type { BoardCategoryFilter } from '@/config/boards';
+import { cx } from '@/lib/cx';
 
 export default function BoardGrid() {
   const category = useBoardFilterStore(selectBoardCategory);
@@ -21,15 +22,14 @@ export default function BoardGrid() {
   const setCategory = useBoardFilterStore((state) => state.setCategory);
   const setKeyword = useBoardFilterStore((state) => state.setKeyword);
   const reset = useBoardFilterStore((state) => state.reset);
-  const debouncedKeyword = useDebouncedValue(keyword, 250);
   const isAuthenticated = useAuthStore((state) => Boolean(state.user));
 
   const queryOptions = useMemo(
     () => ({
-      ...(debouncedKeyword ? { keyword: debouncedKeyword } : {}),
+      ...(keyword ? { keyword } : {}),
       ...(category === 'ALL' ? {} : { category }),
     }),
-    [debouncedKeyword, category],
+    [keyword, category],
   );
 
   const {
@@ -44,10 +44,21 @@ export default function BoardGrid() {
   } = useInfiniteBoardsQuery(queryOptions);
 
   const boards = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
+  const normalizedKeyword = keyword.trim().toLowerCase();
+  const filteredBoards = useMemo(
+    () =>
+      filterBoards({
+        boards,
+        category,
+        keyword: normalizedKeyword,
+      }),
+    [boards, category, normalizedKeyword],
+  );
 
+  const isRefreshing = !isPending && isFetching && !isFetchingNextPage;
   const showSkeleton = isPending && boards.length === 0;
-  const showEmpty = !isPending && !error && boards.length === 0;
-  const busyLabel = isFetching && !isFetchingNextPage && boards.length > 0;
+  const showEmpty =
+    !isPending && !isFetching && !isFetchingNextPage && !error && filteredBoards.length === 0;
   const listBusy = isFetching || isFetchingNextPage;
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +75,7 @@ export default function BoardGrid() {
           fetchNextPage();
         }
       },
-      { rootMargin: '200px' },
+      { rootMargin: '600px 0px 600px 0px' },
     );
 
     observer.observe(node);
@@ -72,6 +83,13 @@ export default function BoardGrid() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, boards.length]);
 
   const errorMessage = resolveErrorMessage(error);
+
+  useEffect(() => {
+    if (!data) return;
+    if (!hasNextPage || isFetchingNextPage) return;
+    if (filteredBoards.length > 0) return;
+    fetchNextPage();
+  }, [data, fetchNextPage, filteredBoards.length, hasNextPage, isFetchingNextPage]);
 
   return (
     <section className="space-y-8" aria-live="polite">
@@ -97,12 +115,6 @@ export default function BoardGrid() {
         }
       />
 
-      {busyLabel && (
-        <p className="text-sm text-[#425079]" role="status">
-          최신 게시글을 불러오는 중이에요…
-        </p>
-      )}
-
       {error ? (
         <EmptyState
           title="게시글을 불러오지 못했어요."
@@ -126,7 +138,7 @@ export default function BoardGrid() {
             description="검색어나 카테고리를 변경하거나 필터를 초기화해주세요."
             action={
               <button type="button" onClick={reset} className={buttonClasses({ variant: 'ghost' })}>
-                필터 초기화
+                초기화
               </button>
             }
           />
@@ -143,7 +155,12 @@ export default function BoardGrid() {
         )
       ) : (
         <>
-          <BoardList boards={boards} isBusy={listBusy} />
+          <BoardList
+            boards={filteredBoards}
+            isBusy={listBusy}
+            isRefreshing={isRefreshing}
+            showLoadingPlaceholders={isFetchingNextPage}
+          />
           {hasNextPage && (
             <div className="flex flex-col items-center gap-4 pt-4">
               <button
@@ -163,14 +180,71 @@ export default function BoardGrid() {
   );
 }
 
-function BoardList({ boards, isBusy }: { boards: Board[]; isBusy: boolean }) {
+function BoardList({
+  boards,
+  isBusy,
+  isRefreshing,
+  showLoadingPlaceholders,
+}: {
+  boards: Board[];
+  isBusy: boolean;
+  isRefreshing: boolean;
+  showLoadingPlaceholders: boolean;
+}) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2" role="list" aria-busy={isBusy} aria-live="polite">
+    <div
+      className={cx(
+        'grid gap-6 sm:grid-cols-2 transition-opacity duration-200',
+        isRefreshing ? 'opacity-60 pointer-events-none' : 'opacity-100',
+      )}
+      role="list"
+      aria-busy={isBusy}
+      aria-live="polite"
+    >
       {boards.map((board) => (
         <BoardCard key={board.id} board={board} />
       ))}
+      {showLoadingPlaceholders && <LoadingPlaceholders />}
     </div>
   );
+}
+
+function LoadingPlaceholders() {
+  return (
+    <>
+      {Array.from({ length: 2 }).map((_, index) => (
+        <div
+          key={`placeholder-${index}`}
+          className="h-full animate-pulse rounded-2xl border border-[#dfe4f4] bg-white p-6 shadow-sm"
+          aria-hidden
+        >
+          <div className="mb-4 h-5 w-24 rounded-full bg-[#e3e7f4]" />
+          <div className="mb-4 h-6 w-3/4 rounded-full bg-[#d4daed]" />
+          <div className="mb-2 h-4 w-full rounded-full bg-[#e3e7f4]" />
+          <div className="h-4 w-2/3 rounded-full bg-[#e3e7f4]" />
+        </div>
+      ))}
+    </>
+  );
+}
+
+function filterBoards({
+  boards,
+  category,
+  keyword,
+}: {
+  boards: Board[];
+  category: BoardCategoryFilter;
+  keyword: string;
+}) {
+  if (boards.length === 0) return boards;
+  const hasKeyword = keyword.length > 0;
+  return boards.filter((board) => {
+    const matchCategory = category === 'ALL' || board.boardCategory === category;
+    if (!matchCategory) return false;
+    if (!hasKeyword) return true;
+    return board.title.toLowerCase().includes(keyword);
+  });
 }
 
 function resolveErrorMessage(error: unknown): string {

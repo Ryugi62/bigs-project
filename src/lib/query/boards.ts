@@ -123,6 +123,7 @@ export function useInfiniteBoardsQuery(options: BoardsQueryOptions = {}) {
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
     staleTime: 30_000,
     gcTime: 300_000,
+    placeholderData: (previousData) => previousData,
   });
 }
 

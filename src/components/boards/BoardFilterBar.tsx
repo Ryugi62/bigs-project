@@ -4,7 +4,9 @@ import { BOARD_FILTER_TABS, type BoardCategoryFilter } from '@/config/boards';
 import { Input } from '@/components/ui/Input';
 import { cx } from '@/lib/cx';
 import { buttonClasses } from '@/components/ui/Button';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 
 const tabBaseClass =
   'cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c2b65] lg:px-5';
@@ -28,7 +30,18 @@ export default function BoardFilterBar({
   actions,
   isBusy,
 }: BoardFilterBarProps) {
+  const [inputValue, setInputValue] = useState(keyword);
+  const debouncedValue = useDebouncedValue(inputValue, 220);
   const hasActiveFilters = category !== 'ALL' || keyword.trim().length > 0;
+
+  useEffect(() => {
+    setInputValue(keyword);
+  }, [keyword]);
+
+  useEffect(() => {
+    if (debouncedValue === keyword) return;
+    onKeywordChange(debouncedValue);
+  }, [debouncedValue, keyword, onKeywordChange]);
 
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-[#dfe4f4] bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:p-6">
@@ -60,8 +73,8 @@ export default function BoardFilterBar({
           <Input
             type="search"
             placeholder="키워드로 검색"
-            value={keyword}
-            onChange={(event) => onKeywordChange(event.target.value)}
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
             className="pr-12"
             aria-label="게시글 검색"
           />
@@ -90,7 +103,7 @@ export default function BoardFilterBar({
                 className={buttonClasses({ variant: 'ghost', className: 'text-[#1c2b65]/80' })}
                 disabled={!hasActiveFilters}
               >
-                필터 초기화
+                초기화
               </button>
             )}
             {actions}
