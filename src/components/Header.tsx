@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import LogoImage from '@/app/assets/logo.png';
 import { cx } from '@/lib/cx';
 import { buttonClasses } from '@/components/ui/Button';
+import { useAuthStore } from '@/store/auth';
+import { useSignOutMutation } from '@/lib/query/auth';
 
 type NavItem = { label: string; href: string };
 
@@ -45,6 +47,8 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
 export default function HeaderComponent() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const signOutMutation = useSignOutMutation();
 
   // Lock body scroll when the drawer is open
   useEffect(() => {
@@ -81,15 +85,33 @@ export default function HeaderComponent() {
           </nav>
 
           <div className="col-start-3 flex items-center justify-end gap-4">
-            <Link
-              href="/sign-in"
-              className={cx('hidden md:inline-flex', buttonClasses({ variant: 'ghost' }))}
-            >
-              로그인
-            </Link>
-            <Link href="/sign-up" className={cx('hidden md:inline-flex', buttonClasses({}))}>
-              회원가입
-            </Link>
+            {user ? (
+              <>
+                <span className="hidden text-sm font-semibold text-[#1c2b65] md:inline-flex">
+                  {user.name || user.username}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => signOutMutation.mutate()}
+                  className={cx('hidden md:inline-flex', buttonClasses({ variant: 'ghost' }))}
+                  disabled={signOutMutation.isPending}
+                >
+                  {signOutMutation.isPending ? '로그아웃 중…' : '로그아웃'}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className={cx('hidden md:inline-flex', buttonClasses({ variant: 'ghost' }))}
+                >
+                  로그인
+                </Link>
+                <Link href="/sign-up" className={cx('hidden md:inline-flex', buttonClasses({}))}>
+                  회원가입
+                </Link>
+              </>
+            )}
             <span
               role="button"
               tabIndex={0}
@@ -132,7 +154,7 @@ export default function HeaderComponent() {
           role="dialog"
           aria-modal="true"
         >
-          <nav className="flex flex-col gap-2 p-6 pt-24" aria-label="모바일 메뉴">
+          <nav className="flex flex-col gap-3 p-6 pt-24" aria-label="모바일 메뉴">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
@@ -147,20 +169,41 @@ export default function HeaderComponent() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/sign-in"
-              onClick={() => setOpen(false)}
-              className="mt-6 rounded-full bg-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-white"
-            >
-              로그인
-            </Link>
-            <Link
-              href="/sign-up"
-              onClick={() => setOpen(false)}
-              className="rounded-full border border-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-[#1c2b65]"
-            >
-              회원가입
-            </Link>
+            {user ? (
+              <>
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#f0f4ff] px-4 py-3 text-sm font-semibold text-[#1c2b65]">
+                  {user.name || user.username}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    signOutMutation.mutate();
+                    setOpen(false);
+                  }}
+                  className="rounded-full border border-[#1c2b65] px-4 py-3 text-sm font-semibold text-[#1c2b65]"
+                  disabled={signOutMutation.isPending}
+                >
+                  {signOutMutation.isPending ? '로그아웃 중…' : '로그아웃'}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full bg-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-white"
+                >
+                  로그인
+                </Link>
+                <Link
+                  href="/sign-up"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full border border-[#1c2b65] px-4 py-3 text-center text-sm font-semibold text-[#1c2b65]"
+                >
+                  회원가입
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </div>
