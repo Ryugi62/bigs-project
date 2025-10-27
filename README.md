@@ -1,205 +1,136 @@
-<div align="center">
+# BIGS 기술 과제 프로젝트
 
-# **BIGS OpsHub Personal — 내 게시글 관리 허브**
+## 1. 프로젝트 개요
 
-<!-- 배너 이미지를 `public/banner.png` 로 추가하면 아래 이미지가 표시됩니다. 없으면 이 줄을 지워도 됩니다. -->
-<img src="public/banner.png" alt="Bigs-Project Banner" width="720" />
+본 프로젝트는 BIGS 기업의 기술 과제 전형 통과를 목표로 제작된 Next.js 기반 웹 애플리케이션입니다.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-20232A?style=flat&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![ESLint](https://img.shields.io/badge/ESLint-9-4B32C3?style=flat&logo=eslint&logoColor=white)](https://eslint.org/)
+제공된 [API 문서](https://documenter.getpostman.com/view/18478200/2sAY4vfh1u#intro)를 기반으로 사용자 인증, 게시글 CRUD(생성, 조회, 수정, 삭제) 등 핵심 기능을 구현하였으며, 실제 서비스 수준의 사용자 경험과 안정성을 제공하기 위해 모범적인 아키텍처 설계와 코드 품질 유지에 중점을 두었습니다.
 
-</div>
+## 2. 주요 기능 및 시연
 
-# 설명
+### 🖥️ **반응형 디자인**
 
-빅스페이먼츠 기술과제 프로젝트로, 제공 API(`/auth`, `/boards`)를 활용해 **로그인한 사용자의 게시글만 안전하게 모아 관리**하는 개인 운영 게시판입니다. `/boards` 응답이 작성자 본인 글만 반환하는 특성을 제품 컨셉에 반영해, 내가 남긴 공지·Q&A·자유 게시글을 빠르게 찾고 수정/삭제할 수 있도록 구성했습니다.
+모바일, 태블릿, 데스크탑 등 모든 디바이스에서 최적의 사용자 경험을 제공하기 위해 반응형으로 디자인되었습니다.
 
-카테고리(NOTICE/FREE/QNA/ETC) 필터와 키워드 검색을 지원하며, React Query 캐시와 Zustand 스토어로 목록/필터 상태를 관리합니다. Next API Routes가 BFF 역할을 맡아 Axios 클라이언트를 통해 upstream API와 통신하고, CSRF/토큰 처리는 서버에서 안전하게 수행합니다.
+_(데스크탑, 태블릿, 모바일 화면 전환을 보여주는 GIF)_
 
-## 데모/배포
+### 👤 **사용자 인증**
 
-- 배포 주소: https://test.com/
+- **회원가입**: 사용자는 아이디, 비밀번호, 이름, 프로필 이미지를 입력하여 회원가입을 할 수 있습니다.
+- **로그인/로그아웃**: JWT 토큰 기반의 인증 시스템을 통해 안전하게 로그인 및 로그아웃 할 수 있습니다.
 
-## 기술 스택
+_(회원가입 및 로그인, 로그아웃 과정을 보여주는 GIF)_
 
-- Next.js 16 (App Router)
-- React 19, TypeScript 5
-- Tailwind CSS 4, PostCSS
-- ESLint 9, eslint-config-next
+### 📝 **게시판 (CRUD)**
 
-## 폴더 구조
+- **게시글 목록 조회**: 페이지네이션 기능이 포함된 게시글 목록을 조회할 수 있습니다.
+- **게시글 상세 조회**: 특정 게시글의 상세 내용을 확인할 수 있습니다.
+- **게시글 작성 및 수정**: 사용자는 새로운 게시글을 작성하고, 본인이 작성한 게시글을 수정할 수 있습니다.
+- **게시글 삭제**: 본인이 작성한 게시글을 삭제할 수 있습니다.
 
-```
-.
-├─ next.config.ts           # Next.js 설정
-├─ postcss.config.mjs       # PostCSS/Tailwind 설정
-├─ eslint.config.mjs        # ESLint 설정
-├─ tsconfig.json            # TS 설정
-├─ public/                  # 정적 자산 (배너, 아이콘 등)
-└─ src/
-   └─ app/
-      ├─ layout.tsx        # 루트 레이아웃
-      ├─ page.tsx          # 홈 페이지
-      └─ globals.css       # 전역 스타일 (Tailwind 포함)
-```
+_(게시글 생성, 수정, 삭제 과정을 보여주는 GIF)_
 
-## 빠른 시작
+## 3. 기술적 의사결정 및 아키텍처
 
-사전 요구 사항
+면접 과정에서의 코드 리뷰를 염두에 두고, 아래와 같은 기술 스택과 설계 패턴을 도입하여 프로젝트의 확장성, 안정성, 유지보수성을 높였습니다.
 
-- Node.js 18.18 이상 또는 20 이상 권장
-- npm 사용 (이 저장소는 `package-lock.json`을 포함합니다)
+### **Next.js App Router & BFF (Backend for Frontend)**
 
-설치 및 실행
+- **Next.js API Route**를 **BFF 패턴**으로 활용하여 외부 API 요청을 중계합니다.
+- **장점**:
+  1.  **보안 강화**: 클라이언트는 실제 API 엔드포인트와 API 키를 알 수 없으며, 서버 측에서 안전하게 토큰을 관리(**HttpOnly 쿠키**)하여 XSS 공격으로부터 토큰을 보호합니다.
+  2.  **유연성**: 프론트엔드에 필요한 데이터만 가공하여 전달할 수 있습니다.
+  3.  **CORS 정책 우회**: 서버 간 통신으로 브라우저의 CORS 정책을 우회할 수 있습니다.
 
-```
-# 저장소 클론
-git clone https://github.com/Ryugi62/bigs-project.git
-cd bigs-project
+### **TanStack Query (React Query) 기반 서버 상태 관리**
 
-# 의존성 설치
-npm install
+- **서버 상태 관리**를 위해 **TanStack Query**를 도입했습니다.
+- **장점**:
+  1.  **캐싱 및 데이터 동기화**: 서버 데이터를 자동으로 캐싱하고, `stale-while-revalidate` 전략을 통해 UI에 항상 최신 데이터를 보여줍니다.
+  2.  **로딩 및 에러 상태 처리**: 데이터 fetching 시 발생하는 로딩, 성공, 에러 상태를 직관적으로 관리할 수 있습니다.
+  3.  **코드 간소화**: `useEffect`와 `useState`를 조합하여 작성해야 했던 복잡한 비동기 로직을 선언적으로 관리할 수 있습니다.
 
-# 개발 서버 실행 (http://localhost:3000)
-npm run dev
+### **Zustand 기반 클라이언트 상태 관리**
 
-# 프로덕션 빌드 및 실행
-npm run build
-npm start
+- **클라이언트 상태 관리**는 **Zustand**를 사용했습니다.
+- **장점**:
+  1.  **가벼움**: 별도의 보일러플레이트 없이 간결한 코드로 상태를 정의하고 사용할 수 있습니다.
+  2.  **유연성**: React Context API와 달리 컴포넌트 트리 최상단에 Provider를 선언할 필요가 없습니다.
 
-# 코드 품질 점검
-npm run lint
-```
+### **Component Driven Development (CDD)**
 
-## 주요 기능
+- UI를 독립적이고 재사용 가능한 컴포넌트 단위로 개발하는 **CDD 방법론**을 적용했습니다.
+- `src/components` 디렉토리에 `ui`(원자), `feature`(기능), `layout`(레이아웃) 등으로 컴포넌트를 분류하여 코드의 재사용성과 유지보수성을 극대화했습니다.
 
-- 로그인한 사용자의 게시글 목록을 React Query로 불러오고 캐시 유지
-- NOTICE/QNA/FREE/ETC 카테고리 및 키워드 기반 필터링 (Zustand 상태 관리)
-- 게시글 작성·수정·삭제 흐름과 첨부 파일 업로드 FormData 처리
-- 보호된 링크/라우팅과 토스트 알림으로 인증 유도 및 피드백 제공
+## 4. 기술 스택
 
-## 개발 일정
+| 구분                 | 기술                                         |
+| -------------------- | -------------------------------------------- |
+| **Core**             | `Next.js` (v16), `React` (v19), `TypeScript` |
+| **State Management** | `TanStack Query` (React Query), `Zustand`    |
+| **Styling**          | `Tailwind CSS` (v4)                          |
+| **HTTP Client**      | `Axios`                                      |
+| **Code Quality**     | `ESLint`, `Prettier`, `Husky`, `lint-staged` |
 
-- 1차: 기본 페이지/레이아웃 구성, UI 토큰 정리
-- 2차: 핵심 도메인(게시글) CRUD, 라우팅/상태관리
-- 3차: 인증 연동, 배포/모니터링, 성능 점검
+## 5. 프로젝트 실행 방법
 
-## 코드 스타일 & 규칙
+### **사전 요구사항**
 
-- TypeScript를 기본으로 사용합니다.
-- ESLint(Next.js 권장 구성)로 린팅합니다: `npm run lint`
-- Tailwind CSS 4를 사용하여 유틸리티 우선 스타일을 적용합니다.
+- [Node.js](https://nodejs.org/ko) (v20.x 이상 권장)
+- `npm`
 
-## 배포 가이드 (권장)
+### **설치 및 실행**
 
-- Vercel에 손쉽게 배포할 수 있습니다.
-  - 환경 변수 필요 시 Vercel Project Settings → Environment Variables에서 관리
-  - `npm run build`가 성공하는지 로컬에서 먼저 확인
+1.  **저장소 복제**
 
-## 서버/클라이언트 상태 관리 가이드
+    ```bash
+    git clone https://github.com/ryugi62/bigs-project.git
+    cd bigs-project
+    ```
 
-- 서버 상태: @tanstack/react-query로 페칭/캐싱/리페치/리트라이 관리
-- 클라이언트 상태: Zustand로 UI/세션 등의 로컬 상태 관리
+2.  **의존성 설치**
 
-### React Query 사용법
+    ```bash
+    npm install
+    ```
 
-- Provider: 앱은 이미 `QueryClientProvider`로 래핑되어 있습니다.
-  - 파일: `src/app/providers.tsx`, `src/lib/query/client.ts`
-- 예시 쿼리 훅: `useBoardsQuery`
-  - 파일: `src/lib/query/boards.ts`
+3.  **환경 변수 설정**
+    - `.env.example` 파일을 복사하여 `.env.local` 파일을 생성합니다.
+    - 과제 API 문서에 명시된 기본 URL을 입력합니다.
 
-```
-import { useBoardsQuery } from '@/lib/query/boards'
+    ```bash
+    cp .env.example .env.local
+    ```
 
-export default function Boards() {
-  const { data, isLoading, error } = useBoardsQuery()
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>에러가 발생했어요.</div>
-  return <pre>{JSON.stringify(data, null, 2)}</pre>
-}
-```
+    ```.env.local
+    # .env.local
+    NEXT_PUBLIC_API_URL=https://assignment.bigs.co.kr
+    ```
 
-### 인증 API 연동 (BFF 프록시)
+4.  **개발 서버 실행**
 
-- 외부 API(`/auth`, `/boards`)는 Next API 라우트(`/api/*`)로 프록시합니다.
-- 로그인 성공 시 서버가 httpOnly 쿠키로 토큰을 저장합니다(클라이언트 JS 접근 불가).
-  - 공통 클라이언트: `src/lib/api/client.ts` (베이스 URL=`/api`, `withCredentials: true`)
-  - 서버 라우트: `src/app/api/auth/*`, `src/app/api/boards/*`
-  - JWT 유틸: `src/lib/auth/jwt.ts`
-  - 인증 스토어(Zustand): `src/store/auth.ts` (토큰 미보관, `user`만 관리)
-  - React Query 뮤테이션: `src/lib/query/auth.ts`
+    ```bash
+    npm run dev
+    ```
 
-사용 예시
+5.  브라우저에서 [http://localhost:3000](http://localhost:3000)으로 접속합니다.
+
+## 6. 폴더 구조
 
 ```
-import { useSignInMutation, useSignUpMutation, useSignOutMutation } from '@/lib/query/auth'
-
-function AuthExample() {
-  const signIn = useSignInMutation()
-  const signUp = useSignUpMutation()
-  const signOut = useSignOutMutation()
-
-  const handleLogin = () => {
-    signIn.mutate({
-      username: 'developer@bigs.or.kr',
-      password: '123qwe!@#',
-    })
-  }
-
-  const handleSignup = () => {
-    signUp.mutate({
-      username: 'test@bigs.or.kr',
-      name: '개발자',
-      password: '123qwe!@#',
-      confirmPassword: '123qwe!@#',
-    })
-  }
-
-  return (
-    <div>
-      <button onClick={handleLogin}>로그인</button>
-      <button onClick={handleSignup}>회원가입</button>
-      <button onClick={() => signOut.mutate()}>로그아웃</button>
-    </div>
-  )
-}
+/src
+├── app/              # Next.js App Router (페이지 및 API 라우트)
+│   ├── (auth)/       # 인증 관련 페이지 그룹
+│   ├── (main)/       # 메인 서비스 페이지 그룹
+│   └── api/          # BFF 역할을 하는 API 라우트
+├── components/       # 재사용 가능한 리액트 컴포넌트
+│   ├── ui/           # 버튼, 인풋 등 원자 단위 컴포넌트
+│   ├── auth/         # 인증 관련 기능 컴포넌트
+│   └── boards/       # 게시판 관련 기능 컴포넌트
+├── lib/              # API 클라이언트, 훅, 유틸리티 함수
+│   ├── api/          # API 호출 관련 로직
+│   ├── http/         # Axios 클라이언트 및 인터셉터 설정
+│   └── query/        # TanStack Query 관련 설정 (키 팩토리 등)
+├── store/            # Zustand 스토어
+└── types/            # 공용 타입 정의
 ```
-
-토큰/보안 동작
-
-- 토큰은 서버에서 httpOnly 쿠키로 관리합니다. 클라이언트는 토큰을 보지 않습니다.
-- 보호 API 호출은 자동으로 쿠키가 포함되며, 서버에서 `Authorization` 헤더를 추가해 외부 API로 전달합니다.
-- 401 시 클라이언트는 재로그인을 유도하세요. (외부 리프레시 API 제공 시 라우트에 보강 가능)
-
-### Zustand 사용법
-
-- UI 스토어 예시: 사이드바 열림/닫힘 상태
-  - 파일: `src/store/ui.ts`
-
-```
-import { useUiStore } from '@/store/ui'
-
-function ToggleSidebar() {
-  const open = useUiStore(s => s.isSidebarOpen)
-  const toggle = useUiStore(s => s.toggleSidebar)
-  return <button onClick={toggle}>{open ? '닫기' : '열기'}</button>
-}
-```
-
-### 환경 변수
-
-- Axios 베이스 URL: `NEXT_PUBLIC_API_BASE_URL`
-  - 권장: `API_BASE_URL`(서버 전용). 예: `.env.local` → `API_BASE_URL=http://localhost:4000`
-  - (호환) 기존: `NEXT_PUBLIC_API_BASE_URL=https://front-mission.bigs.or.kr`도 동작합니다.
-  - 클라이언트는 `/api`만 호출합니다. 외부 API 호스트는 서버 프록시가 사용합니다.
-  - 공통 클라이언트 파일: `src/lib/api/client.ts`
-- 면접용 더미 버튼: `NEXT_PUBLIC_ENABLE_SEED_BUTTON`
-  - `true`로 설정하면 게시판 상단에 “면접용 더미 100개 만들기” 버튼이 노출됩니다.
-  - 기본값은 `false`이며, 실운영 환경에서는 끄는 것을 권장합니다.
-
----
-
-문의/피드백은 이슈로 남겨 주세요. 문서나 내용 보강이 필요하면 알려주시면 바로 반영하겠습니다.
