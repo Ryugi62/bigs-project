@@ -6,7 +6,7 @@ const highlights = [
 
 export default function TrendsRibbon() {
   return (
-    <div className="flex w-full flex-col gap-4 rounded-2xl border border-[#dfe4f4] bg-white/80 px-5 py-4 text-sm text-[#1c2b65] backdrop-blur sm:flex-row sm:items-center sm:gap-6">
+    <div className="flex w-full flex-col gap-4 rounded-2xl px-5 py-4 text-sm text-[#1c2b65] backdrop-blur sm:gap-6">
       {highlights.map((item) => (
         <div key={item.label} className="flex flex-1 flex-col gap-1">
           <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#1c2b65]/60">
