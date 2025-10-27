@@ -40,7 +40,11 @@ export async function handleBoardsNoBody(
   } catch (e) {
     const code =
       method === 'GET' ? ERROR_CODES.BOARDS_FETCH_FAILED : ERROR_CODES.BOARDS_DELETE_FAILED;
-    if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
+    if (e instanceof HttpError) {
+      console.error('Boards proxy error', method, req.url, e.status, e.message, e.data);
+      return jsonError(e.status, e.message, e.data, code);
+    }
+    console.error('Boards proxy unexpected error', method, req.url, e);
     return jsonError(500, 'Boards request failed', undefined, code);
   }
 }
@@ -58,9 +62,31 @@ export async function handleBoardsWithBody(
       return jsonError(403, 'Invalid CSRF token', undefined, ERROR_CODES.CSRF_INVALID);
     }
     const token = await getAccessToken();
-    const body = await req.json();
+    const contentType = req.headers.get('content-type') || '';
+    let body: unknown;
+    let headers: Record<string, string> | undefined;
+    if (contentType.includes('multipart/form-data')) {
+      const buffer = Buffer.from(await req.arrayBuffer());
+      body = buffer;
+      headers = {
+        'Content-Type': contentType,
+        'Content-Length': String(buffer.length),
+      };
+    } else if (contentType.includes('application/json')) {
+      body = await req.json();
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      body = await req.text();
+      headers = { 'Content-Type': contentType };
+    } else if (contentType) {
+      const buffer = Buffer.from(await req.arrayBuffer());
+      body = buffer;
+      headers = {
+        'Content-Type': contentType,
+        'Content-Length': String(buffer.length),
+      };
+    }
     const url = buildBoardsPath(req, segments || []);
-    const { data, status } = await upstream(method, url, { token, body });
+    const { data, status } = await upstream(method, url, { token, body, headers });
     return jsonOk(data, { status });
   } catch (e) {
     const code =
@@ -69,7 +95,11 @@ export async function handleBoardsWithBody(
         : method === 'PUT'
           ? ERROR_CODES.BOARDS_UPDATE_FAILED
           : ERROR_CODES.BOARDS_PATCH_FAILED;
-    if (e instanceof HttpError) return jsonError(e.status, e.message, e.data, code);
+    if (e instanceof HttpError) {
+      console.error('Boards proxy error', method, req.url, e.status, e.message, e.data);
+      return jsonError(e.status, e.message, e.data, code);
+    }
+    console.error('Boards proxy unexpected error', method, req.url, e);
     return jsonError(500, 'Boards request failed', undefined, code);
   }
 }

@@ -9,7 +9,6 @@ const api: AxiosInstance = axios.create({
   baseURL: '/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
   withCredentials: true,
@@ -18,6 +17,11 @@ const api: AxiosInstance = axios.create({
 // Attach CSRF token for mutating methods
 api.interceptors.request.use((config) => {
   const method = (config.method || 'get').toUpperCase();
+  const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
+  if (isFormData) {
+    config.headers = config.headers || {};
+    delete (config.headers as Record<string, unknown>)['Content-Type'];
+  }
   if (typeof window !== 'undefined' && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
     const token = getCookie('csrfToken');
     if (token) {
@@ -49,7 +53,7 @@ api.interceptors.response.use(
         }
         await refreshPromise;
         return api.request(cfg);
-      } catch (_) {
+      } catch {
         // fall through to reject original error
       }
     }
