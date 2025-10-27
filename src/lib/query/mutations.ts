@@ -39,7 +39,7 @@ export function useSeedBoardsMutation() {
       for (let index = 0; index < count; index++) {
         const category = SEED_CATEGORIES[index % SEED_CATEGORIES.length];
         const title = `인터뷰 더미 게시글 #${index + 1}`;
-        const content = `<p>${buildSeedContent(index)}</p>`;
+        const content = buildSeedContent(index);
         const formData = createBoardFormData({
           title,
           content,
