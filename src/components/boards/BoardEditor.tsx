@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import FormField from '@/components/ui/FormField';
 import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import { ClientError, patch, post } from '@/lib/http/client';
@@ -14,6 +13,7 @@ import { extractErrorMessage } from '@/lib/http/error-message';
 import { BOARD_CATEGORY_LABELS } from '@/config/boards';
 import type { BoardCategory } from '@/types/boards';
 import { useToastStore } from '@/store/toast';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 
 const categories: Array<{ value: BoardCategory; label: string }> = (
   Object.entries(BOARD_CATEGORY_LABELS) as Array<[BoardCategory, string]>
@@ -35,6 +35,15 @@ type FormState = {
   boardCategory: BoardCategory;
   attachment: File | null;
 };
+
+function isQuillContentEmpty(value: string) {
+  if (!value) return true;
+  const withoutTags = value
+    .replace(/<(.|\n)*?>/g, '')
+    .replace(/&nbsp;/g, '')
+    .trim();
+  return withoutTags.length === 0;
+}
 
 export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps) {
   const [form, setForm] = useState<FormState>({
@@ -77,7 +86,7 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
-    if (!form.title || !form.content) {
+    if (!form.title || isQuillContentEmpty(form.content)) {
       setError('제목과 내용을 입력해주세요.');
       return;
     }
@@ -123,13 +132,14 @@ export default function BoardEditor({ mode, boardId, initial }: BoardEditorProps
             label="내용"
             htmlFor="board-content"
             required
-            hint="필요 시 마크다운/HTML을 사용해 정리할 수 있습니다."
+            hint="서식을 활용해 본문을 작성하고 링크, 코드 블록을 손쉽게 추가할 수 있습니다."
           >
-            <Textarea
+            <RichTextEditor
               id="board-content"
-              placeholder="본문 내용을 입력하세요."
               value={form.content}
-              onChange={(event) => setForm((prev) => ({ ...prev, content: event.target.value }))}
+              onChange={(content) => setForm((prev) => ({ ...prev, content }))}
+              placeholder="본문 내용을 입력하세요."
+              className="overflow-hidden rounded-3xl"
             />
           </FormField>
         </div>

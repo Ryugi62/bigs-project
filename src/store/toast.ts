@@ -7,6 +7,7 @@ export type Toast = {
   type?: 'info' | 'success' | 'error' | 'warning';
   message: string;
   timeoutMs?: number;
+  dedupeKey?: string;
 };
 
 type ToastState = {
@@ -20,10 +21,18 @@ export const useToastStore = create<ToastState>((set, get) => ({
   toasts: [],
   push: (t) => {
     const id = Math.random().toString(36).slice(2);
-    const toast: Toast = { id, type: 'info', timeoutMs: 3500, ...t };
-    set((s) => ({ toasts: [...s.toasts, toast] }));
+    const dedupeKey = t.dedupeKey ?? `${t.type ?? 'info'}::${t.message}`;
+    const toast: Toast = { id, type: 'info', timeoutMs: 4000, ...t, dedupeKey };
+    set((state) => {
+      const filtered = state.toasts.filter((existing) => existing.dedupeKey !== dedupeKey);
+      return { toasts: [...filtered, toast] };
+    });
     if (toast.timeoutMs && toast.timeoutMs > 0) {
-      setTimeout(() => get().remove(id), toast.timeoutMs);
+      const schedule = typeof window !== 'undefined' ? window.setTimeout : setTimeout;
+      schedule(() => {
+        const exists = get().toasts.some((existing) => existing.id === id);
+        if (exists) get().remove(id);
+      }, toast.timeoutMs);
     }
     return id;
   },

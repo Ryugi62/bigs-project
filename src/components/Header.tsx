@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LogoImage from '@/app/assets/logo.png';
 import { cx } from '@/lib/cx';
@@ -46,6 +46,7 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
 
 export default function HeaderComponent() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const hydrationStatus = useAuthStore((state) => state.hydrationStatus);
@@ -67,6 +68,16 @@ export default function HeaderComponent() {
     if (!pathname) return false;
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
+  };
+
+  const handleSignOut = (options?: { closeMenu?: boolean }) => {
+    if (options?.closeMenu) setOpen(false);
+    signOutMutation.mutate(undefined, {
+      onSuccess: () => {
+        router.push('/');
+        setOpen(false);
+      },
+    });
   };
 
   return (
@@ -98,7 +109,7 @@ export default function HeaderComponent() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => signOutMutation.mutate()}
+                  onClick={() => handleSignOut()}
                   className={cx('hidden md:inline-flex', buttonClasses({ variant: 'ghost' }))}
                   disabled={signOutMutation.isPending}
                 >
@@ -186,10 +197,7 @@ export default function HeaderComponent() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => {
-                    signOutMutation.mutate();
-                    setOpen(false);
-                  }}
+                  onClick={() => handleSignOut({ closeMenu: true })}
                   className="cursor-pointer rounded-full border border-[#1c2b65] px-4 py-3 text-sm font-semibold text-[#1c2b65]"
                   disabled={signOutMutation.isPending}
                 >
