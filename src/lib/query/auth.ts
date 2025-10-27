@@ -25,13 +25,17 @@ export function useSignInMutation() {
     mutationFn: (body: SignInBody) => signIn(body),
     onSuccess: async (data: SignInResponse) => {
       setUser(data.user ?? null);
+      useAuthStore.getState().setHydrationStatus('done');
       try {
         const me = await fetchMe();
         setUser(me.user ?? data.user ?? null);
+        useAuthStore.getState().setHydrationStatus('done');
       } catch {
         // ignore fetch-me failure; user may be unauthenticated
+        useAuthStore.getState().setHydrationStatus('done');
       }
       qc.invalidateQueries({ queryKey: ['boards'] });
+      qc.invalidateQueries({ queryKey: ['boards', 'latest'] });
     },
   });
 }
@@ -44,18 +48,22 @@ export function useSignOutMutation() {
     mutationFn: () => signOut(),
     onSuccess: () => {
       setUser(null);
+      useAuthStore.getState().setHydrationStatus('done');
       qc.clear();
     },
   });
 }
 
 export async function hydrateUserFromServer() {
+  const store = useAuthStore.getState();
+  if (store.hydrationStatus === 'loading') return;
+  store.setHydrationStatus('loading');
   try {
     const { user } = await fetchMe();
-    const setUser = useAuthStore.getState().setUser;
-    setUser(user ?? null);
+    useAuthStore.getState().setUser(user ?? null);
   } catch {
-    const setUser = useAuthStore.getState().setUser;
-    setUser(null);
+    useAuthStore.getState().setUser(null);
+  } finally {
+    useAuthStore.getState().setHydrationStatus('done');
   }
 }

@@ -48,6 +48,8 @@ export default function HeaderComponent() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
+  const hydrationStatus = useAuthStore((state) => state.hydrationStatus);
+  const isHydrating = hydrationStatus === 'loading' || hydrationStatus === 'idle';
   const signOutMutation = useSignOutMutation();
 
   // Lock body scroll when the drawer is open
@@ -85,7 +87,11 @@ export default function HeaderComponent() {
           </nav>
 
           <div className="col-start-3 flex items-center justify-end gap-4">
-            {user ? (
+            {isHydrating ? (
+              <span className="hidden text-sm font-semibold text-[#7b86a7] md:inline-flex">
+                세션 확인 중…
+              </span>
+            ) : user ? (
               <>
                 <span className="hidden text-sm font-semibold text-[#1c2b65] md:inline-flex">
                   {user.name || user.username}
@@ -169,7 +175,11 @@ export default function HeaderComponent() {
                 {item.label}
               </Link>
             ))}
-            {user ? (
+            {isHydrating ? (
+              <span className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#7b86a7]">
+                세션 확인 중…
+              </span>
+            ) : user ? (
               <>
                 <span className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#1c2b65]">
                   {user.name || user.username}

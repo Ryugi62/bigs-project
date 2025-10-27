@@ -60,6 +60,7 @@ export function useSeedBoardsMutation() {
     },
     onSuccess: ({ created, failures }) => {
       qc.invalidateQueries({ queryKey: ['boards'] });
+      qc.invalidateQueries({ queryKey: ['boards', 'latest'] });
       if (failures.length > 0) {
         toast.push({
           type: 'warning',
